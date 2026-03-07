@@ -51,7 +51,8 @@
 					<th class="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300">Name</th>
 					<th class="hidden px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300 sm:table-cell">{t.originalName}</th>
 					<th class="px-4 py-3 text-right font-semibold text-gray-700 dark:text-gray-300">{t.amount}</th>
-					<th class="px-4 py-3 text-center font-semibold text-gray-700 dark:text-gray-300">{t.images}</th>
+					<th class="hidden px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-300 sm:table-cell">{t.paintedOn}</th>
+				<th class="px-4 py-3 text-center font-semibold text-gray-700 dark:text-gray-300">{t.images}</th>
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-gray-100 bg-white dark:divide-gray-700 dark:bg-gray-800">
@@ -64,6 +65,9 @@
 							{@html highlight(miniature.original_name, searchQuery)}
 						</td>
 						<td class="px-4 py-2 text-right text-gray-700 dark:text-gray-300">{miniature.amount}</td>
+						<td class="hidden px-4 py-2 text-gray-500 dark:text-gray-400 sm:table-cell">
+							{miniature.painted_on || '—'}
+						</td>
 						<td class="px-4 py-2 text-center">
 							{#if miniature.images.length > 0}
 								<button

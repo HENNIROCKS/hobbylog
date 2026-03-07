@@ -15,6 +15,7 @@ export interface Miniature {
 	wished: boolean;
 	converted: boolean;
 	painted: boolean;
+	painted_on: string;
 	base_size: string[];
 	material: string[];
 	company: string[];

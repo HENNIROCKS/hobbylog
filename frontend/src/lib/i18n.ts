@@ -42,6 +42,7 @@ export const t = {
 	originalName: 'Original Name',
 	amount: 'Amount',
 	images: 'Images',
+	paintedOn: 'Painted on',
 
 	// DonutChart
 	of: 'of',

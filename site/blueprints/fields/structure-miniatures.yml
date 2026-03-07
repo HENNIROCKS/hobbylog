@@ -77,6 +77,12 @@ fields:
     type: toggle
     width: 1/4
 
+  painted_on:
+    label: Painted on
+    type: date
+    time: false
+    width: 1/4
+
   special_miniature:
     label: Special Miniature
     type: toggle

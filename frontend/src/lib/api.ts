@@ -13,6 +13,7 @@ const MINIATURE_SELECT = {
 	wished: 'structureItem.wished.toBool',
 	converted: 'structureItem.converted.toBool',
 	painted: 'structureItem.painted.toBool',
+	painted_on: true,
 	base_size: 'structureItem.base_size.split',
 	material: 'structureItem.material.split',
 	company: 'structureItem.company.split',
