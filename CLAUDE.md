@@ -6,9 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Backend:** Kirby CMS v5.2 (PHP 8.2+) — headless API via KQL
 - **Frontend:** SvelteKit (TypeScript, `adapter-static`) in `frontend/`
-- **Styling:** SCSS (active), Tailwind migration planned
-- **Hosting:** ALL-INKL shared PHP host — no SSH/Node runtime; SvelteKit builds statically and deploys via FTP
-- Always be aware of both the Kirby backend (PHP/plugins) and SvelteKit frontend contexts when making changes.
+- **Styling:** Tailwind CSS v4 (SvelteKit frontend)
+- **Hosting:** Shared PHP hosting (no SSH, no Node.js runtime) — SvelteKit builds statically and deploys via FTP
+- Always be aware of both the Kirby backend (PHP) and SvelteKit frontend contexts when making changes.
 
 ## Workflow Preferences
 
@@ -20,61 +20,42 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - Explain your plan BEFORE making changes. Wait for confirmation before implementing.
 - For file operations (deletion, renaming, cleanup): enumerate ALL target files with full paths first, confirm with the user, then execute.
-- When searching for `__`-prefixed files/directories, the prefix is **double underscore** (`__`), not single. Always verify pattern matches before acting.
 
 ## Commands
 
-**Start development server:**
+**Start development servers:**
 ```bash
-composer start
-# Runs PHP built-in server at http://localhost:8000
+make backend   # Kirby PHP server at http://localhost:8000
+make frontend  # SvelteKit dev server at http://localhost:5173
 ```
 
-**Compile/watch SCSS (theme plugin):**
-```bash
-cd site/plugins/hb-theme-hobbylog
-npm run watch-styles   # Watch and compile SCSS
-npm run build-styles   # One-time production build
-```
-
-**Admin panel:** `/panel` on the running dev server
+**Admin panel:** `/panel` on the running backend
 
 There are no automated tests.
 
 ## Architecture
 
-This is a [Kirby CMS](https://getkirby.com) site (v5.2, PHP 8.2+) for tracking Warhammer miniatures. Content is file-based — no traditional database.
+This is a [Kirby CMS](https://getkirby.com) site (v5.2, PHP 8.2+) for tracking Warhammer miniatures. Content is file-based — no traditional database. Kirby serves as a headless API backend only; all rendering is handled by the SvelteKit frontend.
 
-### Plugin Structure
+### Plugins
 
-Custom functionality lives in two plugins under `site/plugins/`:
-
-- **`hb-commons/`** — Shared utilities. Provides `Helpers::mapFiles()` and `Helpers::mapRequires()` for recursive directory scanning, plus shared blueprints/snippets/templates used across the site.
-- **`hb-theme-hobbylog/`** — Main theme plugin. Contains all site-specific blueprints, snippets, templates, controllers, collections, and SCSS. Registers its files using `mapFiles` from hb-commons.
-
-Both plugins use `index.php` as the entry point (Kirby plugin registration).
-
-### `__` Prefix Convention
-
-Files and directories prefixed with `__` are disabled/inactive. This applies to:
-- Old plugin versions: `__hb-commons/`, `__hb-theme-hobbylog/`, `__my-hobbylog/`, `__kirby-imagex/`
-- Root-level staging files: `__package.json`, `__src/`, `__assets/`
-
-The active SCSS source and compiled CSS are in `site/plugins/hb-theme-hobbylog/src/scss/` and `site/plugins/hb-theme-hobbylog/assets/css/` respectively.
+Only one active plugin: **`kql`** (Kirby Query Language API). No custom plugins.
 
 ### Configuration
 
-- `site/config/config.php` — Main config. Loads panel.php, private.php, routes.php, thumbs.php. Sets German locale (`de_DE.utf-8`), enables debug mode, declares active theme.
+- `site/config/config.php` — Main config. KQL auth (disabled for local dev), CORS hook, locale, loads `panel.php` and `private.php`.
+- `site/config/config.localhost.php` — Sets `hb.frontend_url = http://localhost:5173`
+- `site/config/config.hobbylog.hendrik-berends.de.php` — Production overrides (KQL auth enabled)
 - `site/config/private.php` — Protected routes
-- `site/config/routes.php` — Custom API routes (mostly commented out)
-- `__hobbylog.json` — Hobby-specific data (Warhammer factions/subfactions)
+
+### Blueprints & Models
+
+- Blueprints live in `site/blueprints/` (`pages/`, `fields/`, `sections/`)
+- Models live in `site/models/` — `DefaultPage` and `HomePage` with `previewUrl()` pointing to SvelteKit
 
 ### Kirby Concepts
 
-- **Blueprints** (YAML in `blueprints/`) define page types and their fields
-- **Templates** (PHP in `templates/`) render pages
-- **Snippets** (PHP in `snippets/`) are reusable components
-- **Collections** and **Controllers** provide data to templates
+- **Blueprints** (YAML in `site/blueprints/`) define page types and their fields
 - Content pages live in `content/` as directories with text files
 
 ### Deployment
