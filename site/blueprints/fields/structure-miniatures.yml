@@ -1,0 +1,102 @@
+label: Miniatures
+type: structure
+
+columns:
+  name:
+    width: 2/3
+  genre:
+    width: 1/6
+  painted:
+    width: 1/6
+
+fields:
+  name:
+    label: Name (EN)
+    type: text
+    width: 1/2
+
+  original_name:
+    label: Original Name
+    type: text
+    width: 1/2
+
+  images:
+    label: Images
+    type: files
+    multiple: true
+    query: page.images
+
+  genre:
+    label: Genre
+    type: select
+    default: fantasy
+    options:
+      fantasy: Fantasy
+      scifi: Sci-Fi
+    width: 1/4
+
+  faction_fantasy:
+    label: Faction (Fantasy)
+    type: text
+    width: 1/4
+
+  categories_fantasy:
+    label: Category (Fantasy)
+    type: text
+    width: 1/4
+
+  faction_scifi:
+    label: Faction (Sci-Fi)
+    type: text
+    width: 1/4
+
+  categories_scifi:
+    label: Category (Sci-Fi)
+    type: text
+    width: 1/4
+
+  amount:
+    label: Amount
+    type: number
+    min: 0
+    default: 1
+    width: 1/4
+
+  wished:
+    label: Wishlisted
+    type: toggle
+    width: 1/4
+
+  converted:
+    label: Converted
+    type: toggle
+    width: 1/4
+
+  painted:
+    label: Painted
+    type: toggle
+    width: 1/4
+
+  special_miniature:
+    label: Special Miniature
+    type: toggle
+    width: 1/4
+
+  base_size:
+    label: Base Size
+    type: text
+    width: 1/4
+
+  material:
+    label: Material
+    type: text
+    width: 1/4
+
+  company:
+    label: Manufacturer
+    type: text
+    width: 1/4
+
+  notes:
+    label: Notes
+    type: textarea

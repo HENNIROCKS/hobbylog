@@ -1,0 +1,36 @@
+title: Collection
+
+image: icon
+
+tabs:
+  miniatures:
+    label: Miniatures
+    fields:
+      miniatures:
+        extends: fields/structure-miniatures
+
+  info:
+    label: Page
+    columns:
+      main:
+        width: 2/3
+        fields:
+          notes:
+            label: Notes
+            type: blocks
+      sidebar:
+        width: 1/3
+        fields:
+          paint-progress:
+            label: Show paint progress
+            type: toggle
+          preview-image:
+            label: Preview image
+            type: files
+            multiple: false
+            query: page.images
+
+  files:
+    label: Files
+    sections:
+      files: sections/files-files

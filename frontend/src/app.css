@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+
+:root {
+	--chart-track: #e5e7eb;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--chart-track: #374151;
+	}
+}

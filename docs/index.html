@@ -1,0 +1,4525 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hobbylog — Dev Session Logs</title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --surface: #1a1d27;
+        --surface2: #22263a;
+        --border: #2e3350;
+        --accent: #6c8ef7;
+        --accent2: #a78bfa;
+        --green: #34d399;
+        --amber: #fbbf24;
+        --red: #f87171;
+        --text: #e2e8f0;
+        --muted: #8892b0;
+        --code-bg: #0d1117;
+        --radius: 10px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      .page {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        min-height: 100vh;
+      }
+
+      /* ── Sidebar ── */
+      nav {
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        padding: 2rem 1.25rem;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      nav .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 2rem;
+      }
+
+      nav .logo-icon {
+        width: 34px;
+        height: 34px;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+      }
+
+      nav .logo-text {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--text);
+      }
+      nav .logo-sub {
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+
+      nav ul {
+        list-style: none;
+      }
+      nav li + li {
+        margin-top: 2px;
+      }
+
+      nav a {
+        display: block;
+        padding: 6px 10px;
+        border-radius: 6px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.82rem;
+        transition: all 0.15s;
+      }
+
+      nav a:hover {
+        background: var(--surface2);
+        color: var(--text);
+      }
+
+      nav .section-label {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 10px 10px 4px;
+        margin-top: 1rem;
+      }
+
+      /* Session buttons */
+      .session-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 7px 10px;
+        border-radius: 6px;
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-family: inherit;
+        line-height: 1.4;
+        transition: all 0.15s;
+      }
+
+      .session-btn:hover {
+        background: var(--surface2);
+        color: var(--text);
+      }
+
+      .session-btn.active {
+        background: rgba(108, 142, 247, 0.12);
+        color: var(--accent);
+      }
+
+      .session-btn .session-date {
+        display: block;
+        font-size: 0.7rem;
+        color: var(--muted);
+        margin-bottom: 1px;
+      }
+
+      .session-btn.active .session-date {
+        color: rgba(108, 142, 247, 0.7);
+      }
+
+      .session-btn .session-title {
+        font-weight: 600;
+      }
+
+      /* ── Main content ── */
+      main {
+        padding: 3rem 3.5rem;
+        max-width: 900px;
+      }
+
+      .session-panel {
+        display: none;
+      }
+      .session-panel.active {
+        display: block;
+      }
+
+      /* ── Hero ── */
+      .hero {
+        margin-bottom: 3.5rem;
+      }
+
+      .hero .meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .badge-blue {
+        background: rgba(108, 142, 247, 0.15);
+        color: var(--accent);
+        border: 1px solid rgba(108, 142, 247, 0.3);
+      }
+      .badge-green {
+        background: rgba(52, 211, 153, 0.12);
+        color: var(--green);
+        border: 1px solid rgba(52, 211, 153, 0.25);
+      }
+      .badge-amber {
+        background: rgba(251, 191, 36, 0.12);
+        color: var(--amber);
+        border: 1px solid rgba(251, 191, 36, 0.25);
+      }
+      .badge-purple {
+        background: rgba(167, 139, 250, 0.12);
+        color: var(--accent2);
+        border: 1px solid rgba(167, 139, 250, 0.25);
+      }
+
+      h1 {
+        font-size: 2.25rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+        background: linear-gradient(135deg, #e2e8f0 0%, #a78bfa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.75rem;
+      }
+
+      .hero p {
+        font-size: 1.05rem;
+        color: var(--muted);
+        max-width: 640px;
+      }
+
+      /* ── Sections ── */
+      section {
+        margin-bottom: 3rem;
+        scroll-margin-top: 2rem;
+      }
+
+      h2 {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      h2 .icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+
+      h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text);
+        margin: 1.5rem 0 0.5rem;
+      }
+
+      p {
+        color: var(--muted);
+        margin-bottom: 0.75rem;
+      }
+
+      ul,
+      ol {
+        color: var(--muted);
+        padding-left: 1.5rem;
+        margin-bottom: 0.75rem;
+      }
+      li + li {
+        margin-top: 0.2rem;
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+
+      /* ── Timeline ── */
+      .timeline {
+        position: relative;
+        padding-left: 2rem;
+      }
+
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 9px;
+        top: 12px;
+        bottom: 12px;
+        width: 2px;
+        background: var(--border);
+        border-radius: 2px;
+      }
+
+      .phase {
+        position: relative;
+        margin-bottom: 1.75rem;
+      }
+
+      .phase::before {
+        content: "";
+        position: absolute;
+        left: -1.75rem;
+        top: 6px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--accent);
+        border: 2px solid var(--bg);
+        box-shadow: 0 0 0 2px var(--accent);
+      }
+
+      .phase-title {
+        font-weight: 700;
+        color: var(--text);
+        font-size: 0.95rem;
+        margin-bottom: 0.35rem;
+      }
+      .phase p {
+        margin: 0;
+        font-size: 0.875rem;
+      }
+
+      /* ── Cards ── */
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.1rem 1.25rem;
+        transition: border-color 0.15s;
+      }
+
+      .card:hover {
+        border-color: rgba(108, 142, 247, 0.4);
+      }
+      .card-icon {
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+      }
+      .card-title {
+        font-weight: 700;
+        font-size: 0.88rem;
+        color: var(--text);
+        margin-bottom: 0.25rem;
+      }
+      .card p {
+        font-size: 0.8rem;
+        margin: 0;
+      }
+
+      /* ── Code ── */
+      pre {
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.1rem 1.25rem;
+        overflow-x: auto;
+        font-size: 0.82rem;
+        line-height: 1.6;
+        margin: 0.75rem 0;
+      }
+
+      code {
+        font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+        font-size: 0.82rem;
+      }
+
+      :not(pre) > code {
+        background: rgba(108, 142, 247, 0.12);
+        color: var(--accent);
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+
+      .k {
+        color: var(--accent2);
+      }
+      .s {
+        color: var(--green);
+      }
+      .c {
+        color: var(--muted);
+        font-style: italic;
+      }
+      .n {
+        color: var(--amber);
+      }
+
+      /* ── File tree ── */
+      .tree {
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.1rem 1.25rem;
+        font-size: 0.82rem;
+        line-height: 1.8;
+        font-family: "JetBrains Mono", monospace;
+        white-space: pre;
+      }
+
+      .tree-dir {
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .tree-file {
+        color: var(--text);
+      }
+      .tree-note {
+        color: var(--muted);
+        font-style: italic;
+      }
+      .tree-del {
+        color: var(--red);
+        text-decoration: line-through;
+        opacity: 0.7;
+      }
+      .tree-new {
+        color: var(--green);
+      }
+
+      /* ── Table ── */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        margin: 0.75rem 0;
+      }
+
+      th {
+        text-align: left;
+        padding: 8px 12px;
+        background: var(--surface2);
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid var(--border);
+      }
+
+      td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--border);
+        color: var(--muted);
+        vertical-align: top;
+      }
+
+      td:first-child {
+        color: var(--text);
+        font-weight: 500;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      /* ── Callout ── */
+      .callout {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+        border-radius: var(--radius);
+        padding: 0.9rem 1.1rem;
+        margin: 1rem 0;
+        font-size: 0.875rem;
+      }
+
+      .callout.warn {
+        border-left-color: var(--amber);
+      }
+      .callout.success {
+        border-left-color: var(--green);
+      }
+      .callout.danger {
+        border-left-color: var(--red);
+      }
+      .callout strong {
+        color: var(--text);
+      }
+      .callout p {
+        margin: 0;
+      }
+
+      /* ── Decision blocks ── */
+      .decision {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1rem 1.25rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .decision-q {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--text);
+        margin-bottom: 0.4rem;
+      }
+      .decision-a {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      /* ── Component list ── */
+      .comp-list {
+        display: grid;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+      }
+
+      .comp {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: 1rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        align-items: start;
+      }
+
+      .comp-name {
+        font-family: monospace;
+        font-size: 0.82rem;
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .comp-desc {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+
+      /* ── Footer ── */
+      footer {
+        margin-top: 4rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      /* ── Session divider ── */
+      .session-divider {
+        margin: 3rem 0;
+        border: none;
+        border-top: 2px solid var(--border);
+        position: relative;
+      }
+      .session-divider::after {
+        content: attr(data-label);
+        position: absolute;
+        left: 50%;
+        top: -0.7em;
+        transform: translateX(-50%);
+        background: var(--bg);
+        padding: 0 1rem;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      @media (max-width: 780px) {
+        .page {
+          grid-template-columns: 1fr;
+        }
+        nav {
+          display: none;
+        }
+        main {
+          padding: 2rem 1.25rem;
+        }
+        h1 {
+          font-size: 1.6rem;
+        }
+        .comp {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <!-- ── Sidebar ── -->
+      <nav>
+        <div class="logo">
+          <div class="logo-icon">⚔️</div>
+          <div>
+            <div class="logo-text">Hobbylog</div>
+            <div class="logo-sub">Dev Session Logs</div>
+          </div>
+        </div>
+
+        <div class="section-label">Sessions</div>
+        <ul id="session-list">
+          <li>
+            <button class="session-btn" data-session="index">
+              <span class="session-date">Index</span>
+              <span class="session-title">Topic Reference</span>
+            </button>
+          </li>
+          <li>
+            <button class="session-btn" data-session="march-07">
+              <span class="session-date">2026-03-07</span>
+              <span class="session-title">i18n, Mobile UX &amp; Planning</span>
+            </button>
+          </li>
+          <li>
+            <button class="session-btn" data-session="march-06-ui">
+              <span class="session-date">2026-03-06</span>
+              <span class="session-title">Search, Sort &amp; Stats</span>
+            </button>
+          </li>
+          <!-- no separate entry for the README blurb — merged into march-06-ui -->
+          <li>
+            <button class="session-btn" data-session="march-05">
+              <span class="session-date">2026-03-05</span>
+              <span class="session-title"
+                >Routing, Filters, Stats, UI &amp; Cleanup</span
+              >
+            </button>
+          </li>
+          <li>
+            <button class="session-btn" data-session="blueprints-kql">
+              <span class="session-date">2026-03-04</span>
+              <span class="session-title">Blueprints &amp; KQL Fixes</span>
+            </button>
+          </li>
+          <li>
+            <button class="session-btn" data-session="march-03">
+              <span class="session-date">2026-03-03</span>
+              <span class="session-title">Headless Setup &amp; Cleanup</span>
+            </button>
+          </li>
+        </ul>
+
+        <div class="section-label">This session</div>
+        <ul id="section-links"></ul>
+      </nav>
+
+      <!-- ── Content ── -->
+      <main>
+        <!-- ════════════════════════════════════════
+         INDEX: Topic Reference
+         ════════════════════════════════════════ -->
+        <div id="session-index" class="session-panel">
+          <div class="hero">
+            <div class="meta">
+              <span class="badge badge-blue">📋 Reference</span>
+              <span class="badge badge-purple">Topic Index</span>
+            </div>
+            <h1>Topic Reference</h1>
+            <p>
+              Quick lookup table — find specific decisions, patterns, and
+              configurations across all session logs.
+            </p>
+          </div>
+
+          <section data-nav="Architecture" id="index-architecture">
+            <h2>
+              <span class="icon" style="background: rgba(108, 142, 247, 0.15)"
+                >🏛️</span
+              >
+              Architecture
+            </h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Topic</th>
+                  <th>Where</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <a
+                      href="#headless-stack"
+                      onclick="activateSession('march-03')"
+                      >Technology stack (Kirby + SvelteKit)</a
+                    >
+                  </td>
+                  <td>Headless Setup · Mar 03</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#headless-kirby"
+                      onclick="activateSession('march-03')"
+                      >CORS configuration</a
+                    >
+                  </td>
+                  <td>Headless Setup · Mar 03</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#headless-decisions"
+                      onclick="activateSession('march-03')"
+                      >Design decisions &amp; trade-offs</a
+                    >
+                  </td>
+                  <td>Headless Setup · Mar 03</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#headless-gotchas"
+                      onclick="activateSession('march-03')"
+                      >Gotchas &amp; fixes (SSR, hydration)</a
+                    >
+                  </td>
+                  <td>Headless Setup · Mar 03</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#rfs-plugin-removal"
+                      onclick="activateSession('march-05')"
+                      >Plugin removal rationale</a
+                    >
+                  </td>
+                  <td>Routing &amp; Filters · Mar 05</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section data-nav="Data &amp; API" id="index-data">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)"
+                >🔌</span
+              >
+              Data &amp; API
+            </h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Topic</th>
+                  <th>Where</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <a
+                      href="#headless-data"
+                      onclick="activateSession('march-03')"
+                      >Data model (miniature fields)</a
+                    >
+                  </td>
+                  <td>Headless Setup · Mar 03</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#headless-api"
+                      onclick="activateSession('march-03')"
+                      >KQL API client (<code>api.ts</code>)</a
+                    >
+                  </td>
+                  <td>Headless Setup · Mar 03</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#bkql-blueprints"
+                      onclick="activateSession('blueprints-kql')"
+                      >Kirby blueprints (structure field)</a
+                    >
+                  </td>
+                  <td>Blueprints &amp; KQL · Mar 04</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#bkql-kql-fixes"
+                      onclick="activateSession('blueprints-kql')"
+                      >KQL query fixes</a
+                    >
+                  </td>
+                  <td>Blueprints &amp; KQL · Mar 04</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#bkql-preview-url"
+                      onclick="activateSession('blueprints-kql')"
+                      >Panel preview URL (env-aware)</a
+                    >
+                  </td>
+                  <td>Blueprints &amp; KQL · Mar 04</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section data-nav="Frontend" id="index-frontend">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >⚡</span
+              >
+              Frontend (SvelteKit)
+            </h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Topic</th>
+                  <th>Where</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <a
+                      href="#headless-scaffold"
+                      onclick="activateSession('march-03')"
+                      >SvelteKit scaffold &amp; file structure</a
+                    >
+                  </td>
+                  <td>Headless Setup · Mar 03</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#headless-components"
+                      onclick="activateSession('march-03')"
+                      >UI components overview</a
+                    >
+                  </td>
+                  <td>Headless Setup · Mar 03</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="#rfs-routing" onclick="activateSession('march-05')"
+                      >Multi-page routing</a
+                    >
+                  </td>
+                  <td>Routing &amp; Filters · Mar 05</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="#rfs-filters" onclick="activateSession('march-05')"
+                      >Genre/faction filters &amp; URL state pattern</a
+                    >
+                  </td>
+                  <td>Routing &amp; Filters · Mar 05</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#sss-search-sort"
+                      onclick="activateSession('march-06-ui')"
+                      >Search &amp; sort</a
+                    >
+                  </td>
+                  <td>Search, Sort &amp; Stats · Mar 06</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#sss-cards-table"
+                      onclick="activateSession('march-06-ui')"
+                      >Card &amp; table view</a
+                    >
+                  </td>
+                  <td>Search, Sort &amp; Stats · Mar 06</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#sss-wishlist"
+                      onclick="activateSession('march-06-ui')"
+                      >Wishlist tab UX</a
+                    >
+                  </td>
+                  <td>Search, Sort &amp; Stats · Mar 06</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#m07-mobile-ux"
+                      onclick="activateSession('march-07')"
+                      >Mobile UX fixes (touch targets, swipe, responsive table)</a
+                    >
+                  </td>
+                  <td>English Migration · Mar 07</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section data-nav="Stats &amp; UI" id="index-stats">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)"
+                >📊</span
+              >
+              Stats &amp; UI
+            </h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Topic</th>
+                  <th>Where</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <a href="#rfs-stats" onclick="activateSession('march-05')"
+                      >Donut chart stats (index page)</a
+                    >
+                  </td>
+                  <td>Routing &amp; Filters · Mar 05</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#uie-progress"
+                      onclick="activateSession('march-05')"
+                      >Paint progress bar on cards</a
+                    >
+                  </td>
+                  <td>Routing &amp; Filters · Mar 05</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#uie-darkmode"
+                      onclick="activateSession('march-05')"
+                      >Dark mode</a
+                    >
+                  </td>
+                  <td>Routing &amp; Filters · Mar 05</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#sss-stats"
+                      onclick="activateSession('march-06-ui')"
+                      >Per-faction stats &amp; painting queue</a
+                    >
+                  </td>
+                  <td>Search, Sort &amp; Stats · Mar 06</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section data-nav="Config &amp; Ops" id="index-config">
+            <h2>
+              <span class="icon" style="background: rgba(251, 191, 36, 0.15)"
+                >🛠️</span
+              >
+              Config &amp; Ops
+            </h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Topic</th>
+                  <th>Where</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <a
+                      href="#headless-workflow"
+                      onclick="activateSession('march-03')"
+                      >Dev workflow &amp; commands</a
+                    >
+                  </td>
+                  <td>Headless Setup · Mar 03</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#rfs-commands"
+                      onclick="activateSession('march-05')"
+                      >Dev commands (make backend/frontend)</a
+                    >
+                  </td>
+                  <td>Routing &amp; Filters · Mar 05</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#sss-config-cleanup"
+                      onclick="activateSession('march-06-ui')"
+                      >Kirby config files &amp; .gitignore</a
+                    >
+                  </td>
+                  <td>Search, Sort &amp; Stats · Mar 06</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#m07-migration"
+                      onclick="activateSession('march-07')"
+                      >Locale &amp; language settings (en_US)</a
+                    >
+                  </td>
+                  <td>English Migration · Mar 07</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#m07-panel-blueprint"
+                      onclick="activateSession('march-07')"
+                      >Panel site blueprint (layout + sort)</a
+                    >
+                  </td>
+                  <td>English Migration · Mar 07</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section data-nav="i18n" id="index-i18n">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >🌐</span
+              >
+              i18n
+            </h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Topic</th>
+                  <th>Where</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <a href="#m07-i18n" onclick="activateSession('march-07')"
+                      >i18n foundation — <code>t</code> object pattern</a
+                    >
+                  </td>
+                  <td>English Migration · Mar 07</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#m07-migration"
+                      onclick="activateSession('march-07')"
+                      >Full English migration (blueprints, UI, URL params)</a
+                    >
+                  </td>
+                  <td>English Migration · Mar 07</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+          <section data-nav="Planning" id="index-planning">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >🔮</span
+              >
+              Planning &amp; Future Projects
+            </h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Topic</th>
+                  <th>Where</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <a
+                      href="#m07-mobile-app"
+                      onclick="activateSession('march-07')"
+                      >Mobile app options (PWA / Capacitor / Native)</a
+                    >
+                  </td>
+                  <td>English Migration · Mar 07</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </div>
+        <!-- /session-index -->
+
+        <!-- ════════════════════════════════════════
+         SESSION: English Migration & i18n
+         ════════════════════════════════════════ -->
+        <div id="session-march-07" class="session-panel">
+          <div class="hero">
+            <div class="meta">
+              <span class="badge badge-blue">📅 2026-03-07</span>
+              <span class="badge badge-green">✓ Completed</span>
+              <span class="badge badge-purple">Claude Code</span>
+              <span class="badge badge-amber">Session Log</span>
+            </div>
+            <h1>i18n Foundation, Mobile UX &amp; Planning</h1>
+            <p>
+              Full English migration across blueprints, frontend, config, and
+              docs; i18n translation object; panel layout improvements;
+              alphabetical sorting; mobile UX audit and fixes; and a follow-up
+              project plan for a native mobile app.
+            </p>
+          </div>
+
+          <section data-nav="Overview" id="m07-overview">
+            <h2>
+              <span class="icon" style="background: rgba(108, 142, 247, 0.15)"
+                >📋</span
+              >
+              Overview
+            </h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Area</th>
+                  <th>What changed</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Locale &amp; language</td>
+                  <td>
+                    <code>de_DE.utf-8</code> → <code>en_US.utf-8</code>; Kirby
+                    panel language <code>de</code> → <code>en</code>; user
+                    account language updated
+                  </td>
+                </tr>
+                <tr>
+                  <td>Blueprints</td>
+                  <td>
+                    All panel labels translated to English across 3 blueprint
+                    files
+                  </td>
+                </tr>
+                <tr>
+                  <td>i18n foundation</td>
+                  <td>
+                    New <code>src/lib/i18n.ts</code> — <code>t</code> object
+                    with all UI strings; all components import and use it
+                  </td>
+                </tr>
+                <tr>
+                  <td>Frontend UI strings</td>
+                  <td>
+                    All German strings replaced across 8 components/routes
+                  </td>
+                </tr>
+                <tr>
+                  <td>URL params</td>
+                  <td>
+                    State literals and URL params changed to English
+                    (<code>sammlung</code>→<code>collection</code>,
+                    <code>karten</code>→<code>cards</code>, etc.)
+                  </td>
+                </tr>
+                <tr>
+                  <td>Docs</td>
+                  <td>
+                    16 targeted edits to update German UI term references to new
+                    English names
+                  </td>
+                </tr>
+                <tr>
+                  <td>Panel site blueprint</td>
+                  <td>
+                    New <code>site/blueprints/site.yml</code>: collections (2/3)
+                    + system pages (1/3), both sorted A→Z
+                  </td>
+                </tr>
+                <tr>
+                  <td>API sort</td>
+                  <td>
+                    KQL query updated to <code>sortBy("title", "asc")</code> —
+                    frontend card order matches panel
+                  </td>
+                </tr>
+                <tr>
+                  <td>Wishlist wording</td>
+                  <td>
+                    Collection card footer changed from "N Wishlist" to "N on
+                    Wishlist"
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section data-nav="i18n Foundation" id="m07-i18n">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >🌐</span
+              >
+              i18n Foundation
+            </h2>
+            <div class="decision">
+              <div class="decision-q">
+                Library (svelte-i18n, Paraglide) or custom?
+              </div>
+              <div class="decision-a">
+                Custom <code>t</code> object — Option A. Zero dependencies,
+                trivially upgradeable. Paraglide would be overkill until a
+                second language actually exists.
+              </div>
+            </div>
+            <p>
+              New file <code>frontend/src/lib/i18n.ts</code> exports a single
+              <code>t</code> constant with all UI strings. Dynamic strings are
+              functions:
+            </p>
+            <pre><code><span class="k">export const</span> t = {
+  collection: <span class="s">'Collection'</span>,
+  wishlist: <span class="s">'Wishlist'</span>,
+  painted: <span class="s">'Painted'</span>,
+  <span class="c">// ... 19 more string keys ...</span>
+  showImagesOf: (name: <span class="k">string</span>) =&gt; <span class="s">`Show images of ${name}`</span>,
+  miniatureCount: (count: <span class="k">number</span>, collections: <span class="k">number</span>) =&gt; <span class="s">`...`</span>
+} <span class="k">as const</span>;</code></pre>
+            <p>
+              All 8 frontend components and routes import <code>t</code> and use
+              <code>{t.key}</code> in templates. To add a second language in
+              future: swap the object or make it a reactive store based on a
+              locale preference.
+            </p>
+          </section>
+
+          <section data-nav="English Migration" id="m07-migration">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)"
+                >🔤</span
+              >
+              English Migration
+            </h2>
+
+            <h3>Config &amp; locale</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>File</th>
+                  <th>Change</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>site/config/config.php</code></td>
+                  <td>
+                    <code>'locale' =&gt; 'de_DE.utf-8'</code> →
+                    <code>'en_US.utf-8'</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>site/config/panel.php</code></td>
+                  <td>
+                    <code>'language' =&gt; 'de'</code> → <code>'en'</code> — no
+                    custom translation file needed, English is Kirby's built-in
+                    default
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>site/accounts/ESL388AE/index.php</code></td>
+                  <td>
+                    <code>'language' =&gt; 'de'</code> → <code>'en'</code> —
+                    per-user panel language
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>[slug]/+page.svelte</code></td>
+                  <td>
+                    <code>localeCompare(b.name, 'de')</code> →
+                    <code>localeCompare(b.name, 'en')</code>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>Blueprints</h3>
+            <p>
+              All <code>label:</code> values in the three blueprint files
+              rewritten in English. Notable changes:
+              <code>Bemalt</code>→<code>Painted</code>,
+              <code>Fraktion</code>→<code>Faction</code>,
+              <code>Hersteller</code>→<code>Manufacturer</code>,
+              <code>Basgröße</code>→<code>Base Size</code>,
+              <code>Name (DE)</code>→<code>Name (EN)</code>.
+            </p>
+
+            <h3>URL params &amp; internal state</h3>
+            <p>
+              State literals in <code>[slug]/+page.svelte</code> renamed
+              throughout — type annotations, runtime comparisons, URL
+              read/write, and derived variable names:
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Before</th>
+                  <th>After</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>'sammlung' | 'wunschliste'</code></td>
+                  <td><code>'collection' | 'wishlist'</code></td>
+                </tr>
+                <tr>
+                  <td><code>'karten' | 'tabelle'</code></td>
+                  <td><code>'cards' | 'table'</code></td>
+                </tr>
+                <tr>
+                  <td><code>switchToWunschliste()</code></td>
+                  <td><code>switchToWishlist()</code></td>
+                </tr>
+                <tr>
+                  <td><code>isWunschliste</code></td>
+                  <td><code>isWishlist</code></td>
+                </tr>
+                <tr>
+                  <td><code>sammlungMinis / sammlungTotal</code></td>
+                  <td><code>collectionMinis / collectionTotal</code></td>
+                </tr>
+                <tr>
+                  <td><code>wunschlisteMinis</code></td>
+                  <td><code>wishlistMinis</code></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="callout warn">
+              <p>
+                <strong>Note:</strong> existing bookmarked URLs containing
+                <code>?tab=sammlung</code> or <code>?view=karten</code> will
+                silently fall back to defaults — acceptable for a personal site.
+              </p>
+            </div>
+
+            <h3>Hidden German strings</h3>
+            <p>
+              <code>ImageModal.svelte</code> contained three German strings that
+              were missed in the initial audit (not matched by the
+              blueprint/route search): <code>Schließen</code> (Close button
+              aria-label), <code>Vorheriges</code> (Previous),
+              <code>Nächstes</code> (Next). Found via a second grep pass after
+              the main changes.
+            </p>
+          </section>
+
+          <section data-nav="Panel Site Blueprint" id="m07-panel-blueprint">
+            <h2>
+              <span class="icon" style="background: rgba(251, 191, 36, 0.15)"
+                >🏛️</span
+              >
+              Panel Site Blueprint
+            </h2>
+            <p>
+              Created <code>site/blueprints/site.yml</code> — previously absent,
+              so the panel site view had no custom layout. Two goals:
+              alphabetical sort, and separating system pages from collection
+              pages.
+            </p>
+            <pre><code>columns:
+  main:
+    width: <span class="n">2/3</span>
+    sections:
+      collections:
+        type: pages
+        label: Collections
+        sortBy: title asc
+        query: site.children.listed   <span class="c"># numbered collection pages</span>
+  sidebar:
+    width: <span class="n">1/3</span>
+    sections:
+      system:
+        type: pages
+        label: System Pages
+        sortBy: title asc
+        query: site.children.unlisted  <span class="c"># Home, Error</span></code></pre>
+            <p>
+              Uses Kirby's existing listed/unlisted status — no slug-hardcoding.
+              New system pages automatically appear in the sidebar.
+            </p>
+            <p>
+              The same A→Z order is reflected in the frontend by updating the
+              KQL query:
+              <code>site.children.listed.sortBy("title", "asc")</code> in
+              <code>src/lib/api.ts</code>.
+            </p>
+          </section>
+
+          <section data-nav="Deferred Ideas" id="m07-deferred">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >🔮</span
+              >
+              Deferred Ideas
+            </h2>
+            <h3>Panel "Page" tab fields</h3>
+            <p>
+              The <strong>Page</strong> tab on collection pages contains three
+              fields:
+            </p>
+            <ul>
+              <li>
+                <strong>Notes</strong> (blocks) — not fetched via KQL, not
+                rendered anywhere in the frontend
+              </li>
+              <li>
+                <strong>Show paint progress</strong> (toggle) — fetched as
+                <code>paint_progress</code>, used to conditionally render
+                <code>PaintProgress.svelte</code> ✓
+              </li>
+              <li>
+                <strong>Preview image</strong> (files) — not fetched or used in
+                the frontend
+              </li>
+            </ul>
+            <p>
+              Candidates for a future session: render Notes as a collection
+              intro block, use Preview image as an OG image or collection card
+              thumbnail.
+            </p>
+          </section>
+
+          <section data-nav="Mobile UX Fixes" id="m07-mobile-ux">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)"
+                >📱</span
+              >
+              Mobile UX Fixes
+            </h2>
+            <p>
+              A full audit of the frontend on mobile viewport sizes identified
+              four issues. All were fixed in the same session.
+            </p>
+
+            <h3>Issues found &amp; resolved</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Severity</th>
+                  <th>Issue</th>
+                  <th>Fix</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>High</td>
+                  <td>
+                    <code>ImageModal</code> close button (~28 px) and
+                    Prev/Next buttons (~32 px) below 44 px iOS touch target
+                    minimum
+                  </td>
+                  <td>
+                    Close: <code>p-1</code> → <code>p-2</code>, icon
+                    <code>h-5</code> → <code>h-6</code>. Prev/Next:
+                    <code>px-3 py-1</code> → <code>px-4 py-2</code> +
+                    <code>min-w-[44px]</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td>High</td>
+                  <td>
+                    <code>ImageModal</code> had no swipe support — keyboard
+                    arrows only work on desktop
+                  </td>
+                  <td>
+                    Added <code>ontouchstart</code>/<code>ontouchend</code>
+                    handlers on the image element; 40 px threshold, left swipe
+                    → next, right → prev
+                  </td>
+                </tr>
+                <tr>
+                  <td>High</td>
+                  <td>
+                    <code>FilterBar</code> search input auto-sized to
+                    placeholder text (~80 px on mobile)
+                  </td>
+                  <td>
+                    Added <code>min-w-40 flex-1</code> (grows on mobile),
+                    <code>sm:flex-none</code> reverts on desktop
+                  </td>
+                </tr>
+                <tr>
+                  <td>Medium</td>
+                  <td>
+                    Table view: 4 columns on a 375 px screen — "Original Name"
+                    wastes space when name is the primary identifier
+                  </td>
+                  <td>
+                    <code>hidden sm:table-cell</code> on both the
+                    <code>&lt;th&gt;</code> and every <code>&lt;td&gt;</code>
+                    for the Original Name column
+                  </td>
+                </tr>
+                <tr>
+                  <td>Medium</td>
+                  <td>
+                    Painting queue list items had <code>hover:</code> feedback
+                    only — no touch feedback on tap
+                  </td>
+                  <td>
+                    Added <code>active:bg-gray-100</code> /
+                    <code>dark:active:bg-gray-600</code>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>What was already fine</h3>
+            <ul>
+              <li>Card grid — 2 columns on mobile (<code>grid-cols-2</code>)</li>
+              <li>Index page donut charts — wrap cleanly with <code>flex-wrap</code></li>
+              <li>Faction breakdown — 160 px name column fits on iPhone SE (375 px)</li>
+              <li>Modal backdrop — fills screen with correct padding</li>
+              <li>Table — <code>overflow-x-auto</code> allows horizontal scroll as fallback</li>
+            </ul>
+          </section>
+
+          <section data-nav="Mobile App Planning" id="m07-mobile-app">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >🚀</span
+              >
+              Mobile App Planning (Follow-up Project)
+            </h2>
+            <p>
+              A discussion at the start of the session explored turning the
+              project into a proper mobile app. The conclusion: finish this
+              project as a read-only hobby tracker first, then start a
+              separate project with what was learned here.
+            </p>
+
+            <h3>App options assessed</h3>
+            <div class="card-grid">
+              <div class="card">
+                <div class="card-icon">🌐</div>
+                <div class="card-title">PWA — Low effort</div>
+                <p>
+                  Add <code>manifest.json</code> + service worker to the
+                  existing SvelteKit build. Installs to home screen, works
+                  offline. ~80% of the app feel with ~20% of the effort.
+                  Recommended first step.
+                </p>
+              </div>
+              <div class="card">
+                <div class="card-icon">📦</div>
+                <div class="card-title">Capacitor — Medium effort</div>
+                <p>
+                  Wrap the SvelteKit build in Capacitor. Produces a real
+                  <code>.ipa</code>/<code>.apk</code> for App Store
+                  distribution. Minimal code changes — the web app shells
+                  inside the native wrapper.
+                </p>
+              </div>
+              <div class="card">
+                <div class="card-icon">📱</div>
+                <div class="card-title">React Native — High effort</div>
+                <p>
+                  Full rewrite in a native framework. Only justified if
+                  complex gestures, camera APIs, or platform-specific
+                  features are needed that the web cannot provide.
+                </p>
+              </div>
+            </div>
+
+            <h3>The real constraint: editing</h3>
+            <div class="decision">
+              <div class="decision-q">
+                Why not just wrap the current app in Capacitor now?
+              </div>
+              <div class="decision-a">
+                The app shell is trivial. The hard part is <strong>write
+                support</strong> — KQL is read-only, so editing miniatures
+                from the app requires custom Kirby write endpoints, an auth
+                flow, and image upload from camera → Kirby media. That work
+                is the actual project, not the native wrapper.
+              </div>
+            </div>
+
+            <h3>Follow-up project goals</h3>
+            <ul>
+              <li>Capacitor wrapper as a core design goal from day one</li>
+              <li>Custom Kirby PHP write API (mutations, not just queries)</li>
+              <li>Auth flow — app logs in as a Kirby user</li>
+              <li>Image upload: camera → Kirby media library</li>
+              <li>PWA first as a stepping stone before native packaging</li>
+            </ul>
+          </section>
+
+          <footer>
+            <p>
+              Generated by Claude Code (claude-sonnet-4-6) · Session date:
+              2026-03-07
+            </p>
+          </footer>
+        </div>
+        <!-- /session-march-07 -->
+
+        <!-- ════════════════════════════════════════
+         SESSION: Project Cleanup
+         ════════════════════════════════════════ -->
+        <div id="session-march-03" class="session-panel">
+          <div class="hero">
+            <div class="meta">
+              <span class="badge badge-blue">📅 2026-03-03</span>
+              <span class="badge badge-green">✓ Completed</span>
+              <span class="badge badge-purple">Claude Code</span>
+              <span class="badge badge-amber">Session Log</span>
+            </div>
+            <h1>Headless Setup &amp; Project Cleanup</h1>
+            <p>
+              Converting hobbylog.hendrik-berends.de from a monolithic Kirby CMS
+              site to a headless architecture (Kirby API + SvelteKit static
+              frontend), and cleaning up all <code>__</code>-prefixed deprecated
+              files left behind from the migration.
+            </p>
+          </div>
+
+          <section id="cleanup-context" data-nav="Cleanup: Goals">
+            <h2>
+              <span class="icon" style="background: rgba(108, 142, 247, 0.15)"
+                >🗺️</span
+              >
+              Context &amp; Goal
+            </h2>
+            <p>
+              Over the course of the headless architecture migration, the
+              project was restructured significantly. The old PHP-centric layout
+              left behind files and directories prefixed with <code>__</code> as
+              a convention to mark them as deprecated/inactive. This session's
+              goal was to:
+            </p>
+            <ul>
+              <li>Identify and remove all <code>__</code>-prefixed clutter</li>
+              <li>
+                Migrate favicon/manifest assets to the correct location in the
+                SvelteKit build pipeline
+              </li>
+              <li>
+                Fix <code>head.php</code> to reference the correct favicon files
+                with modern HTML
+              </li>
+              <li>
+                Update README and docs to reflect the cleaned-up structure
+              </li>
+            </ul>
+          </section>
+
+          <section id="cleanup-found" data-nav="What Was Found">
+            <h2>
+              <span class="icon" style="background: rgba(251, 191, 36, 0.15)"
+                >🔍</span
+              >
+              What Was Found
+            </h2>
+
+            <h3>Project root</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Type</th>
+                  <th>Superseded by</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>__assets/</code></td>
+                  <td>Directory</td>
+                  <td><code>frontend/build/</code></td>
+                </tr>
+                <tr>
+                  <td><code>__node_modules/</code></td>
+                  <td>Directory</td>
+                  <td><code>frontend/node_modules/</code></td>
+                </tr>
+                <tr>
+                  <td><code>__src/</code></td>
+                  <td>Directory</td>
+                  <td><code>frontend/src/</code></td>
+                </tr>
+                <tr>
+                  <td><code>__vendor/</code></td>
+                  <td>Directory</td>
+                  <td><code>vendor/</code></td>
+                </tr>
+                <tr>
+                  <td><code>__package.json</code></td>
+                  <td>File</td>
+                  <td><code>frontend/package.json</code></td>
+                </tr>
+                <tr>
+                  <td><code>__package-lock.json</code></td>
+                  <td>File</td>
+                  <td><code>frontend/package-lock.json</code></td>
+                </tr>
+                <tr>
+                  <td><code>__favicon.ico</code></td>
+                  <td>File</td>
+                  <td>→ moved to <code>frontend/static/favicon.ico</code></td>
+                </tr>
+                <tr>
+                  <td><code>__favicon.svg</code></td>
+                  <td>File</td>
+                  <td>→ moved to <code>frontend/static/favicon.svg</code></td>
+                </tr>
+                <tr>
+                  <td><code>__favicon-96x96.png</code></td>
+                  <td>File</td>
+                  <td>→ moved to <code>frontend/static/</code></td>
+                </tr>
+                <tr>
+                  <td><code>__apple-touch-icon.png</code></td>
+                  <td>File</td>
+                  <td>→ moved to <code>frontend/static/</code></td>
+                </tr>
+                <tr>
+                  <td><code>__site.webmanifest</code></td>
+                  <td>File</td>
+                  <td>→ moved to <code>frontend/static/</code></td>
+                </tr>
+                <tr>
+                  <td><code>__hobbylog.json</code></td>
+                  <td>File</td>
+                  <td>→ moved to <code>frontend/static/</code></td>
+                </tr>
+                <tr>
+                  <td><code>__web-app-manifest-192x192.png</code></td>
+                  <td>File</td>
+                  <td>→ moved to <code>frontend/static/</code></td>
+                </tr>
+                <tr>
+                  <td><code>__web-app-manifest-512x512.png</code></td>
+                  <td>File</td>
+                  <td>→ moved to <code>frontend/static/</code></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>site/plugins/</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Superseded by</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>__hb-commons/</code></td>
+                  <td><code>hb-commons/</code></td>
+                </tr>
+                <tr>
+                  <td>
+                    <code>__hb-theme-hobbylog/</code> (~15 MB incl.
+                    node_modules)
+                  </td>
+                  <td><code>hb-theme-hobbylog/</code></td>
+                </tr>
+                <tr>
+                  <td><code>__my-hobbylog/</code></td>
+                  <td>Fully orphaned, no active replacement</td>
+                </tr>
+                <tr>
+                  <td><code>__kirby-imagex/</code></td>
+                  <td>
+                    Replaced by bundled <code>kql</code> +
+                    <code>kirby-password-guard</code>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>site/ and site/config/</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>site/__blueprints/</code></td>
+                  <td>Active blueprints live in plugin folders</td>
+                </tr>
+                <tr>
+                  <td><code>site/__snippets/</code></td>
+                  <td>Active snippets live in plugin folders</td>
+                </tr>
+                <tr>
+                  <td><code>site/__templates/</code></td>
+                  <td>
+                    Active templates live in plugin folders; contained a
+                    <code>___default.php</code> triple-underscore backup
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>site/__src/</code></td>
+                  <td>
+                    Old SCSS source; active SCSS in
+                    <code>hb-theme-hobbylog/src/scss/</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>site/config/__config.php</code></td>
+                  <td>Old default config</td>
+                </tr>
+                <tr>
+                  <td>
+                    <code
+                      >site/config/__config.hobbylog.hendrik-berends.de.php</code
+                    >
+                  </td>
+                  <td>Old production config</td>
+                </tr>
+                <tr>
+                  <td><code>site/config/__hobbylog/</code></td>
+                  <td>
+                    6 PHP data files only referenced from the deleted
+                    <code>__config.php</code>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="callout success">
+              <p>
+                <strong>No dead references:</strong> The audit confirmed that no
+                active PHP, JS, TS, Svelte, or config file referenced any
+                <code>__</code>-prefixed path. All items were safe to delete.
+              </p>
+            </div>
+          </section>
+
+          <section id="cleanup-done" data-nav="What Was Done">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)"
+                >✅</span
+              >
+              What Was Done
+            </h2>
+            <div class="timeline">
+              <div class="phase">
+                <div class="phase-title">
+                  Step 1 — Migrate favicon &amp; manifest files
+                </div>
+                <p>
+                  Moved all <code>__</code>-prefixed favicon/manifest files from
+                  the project root to <code>frontend/static/</code>, stripping
+                  the prefix. SvelteKit copies <code>static/</code> verbatim
+                  into <code>build/</code>.
+                </p>
+              </div>
+              <div class="phase">
+                <div class="phase-title">Step 2 — Delete root clutter</div>
+                <p>
+                  Deleted <code>__assets/</code>, <code>__node_modules/</code>,
+                  <code>__src/</code>, <code>__vendor/</code>,
+                  <code>__package.json</code>, <code>__package-lock.json</code>.
+                  ~16.7 MB freed.
+                </p>
+              </div>
+              <div class="phase">
+                <div class="phase-title">
+                  Step 3 — Delete deprecated plugins
+                </div>
+                <p>
+                  Deleted <code>site/plugins/__hb-commons/</code>,
+                  <code>__hb-theme-hobbylog/</code>,
+                  <code>__my-hobbylog/</code>, <code>__kirby-imagex/</code>.
+                </p>
+              </div>
+              <div class="phase">
+                <div class="phase-title">
+                  Step 4 — Delete deprecated site directories
+                </div>
+                <p>
+                  Deleted <code>site/__blueprints/</code>,
+                  <code>site/__snippets/</code>, <code>site/__templates/</code>,
+                  <code>site/__src/</code>.
+                </p>
+              </div>
+              <div class="phase">
+                <div class="phase-title">
+                  Step 5 — Delete deprecated config files
+                </div>
+                <p>
+                  Deleted <code>site/config/__config.php</code>,
+                  <code>__config.hobbylog.hendrik-berends.de.php</code>,
+                  <code>__hobbylog/</code>.
+                </p>
+              </div>
+              <div class="phase">
+                <div class="phase-title">Step 6 — Update head.php</div>
+                <p>
+                  Removed the commented-out TRASH block (lines 37–64). Replaced
+                  the outdated
+                  <code>&lt;link rel="shortcut icon"&gt;</code> with modern
+                  favicon and manifest tags.
+                </p>
+              </div>
+              <div class="phase">
+                <div class="phase-title">Step 7 — Update README &amp; docs</div>
+                <p>
+                  Fixed project structure in README, removed stale
+                  <code>site/__blueprints/</code> entries, added
+                  <code>frontend/static/</code>. Consolidated session logs into
+                  this single file.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section id="cleanup-favicon" data-nav="Favicon Migration">
+            <h2>
+              <span class="icon" style="background: rgba(251, 191, 36, 0.15)"
+                >🖼️</span
+              >
+              Favicon Migration
+            </h2>
+            <p>
+              The favicon and PWA manifest files were previously in the project
+              root with <code>__</code> prefixes. The old
+              <code>head.php</code> referenced <code>/favicon.ico</code> (no
+              prefix), meaning the browser favicon was actually broken.
+            </p>
+            <p>
+              Files were moved to <code>frontend/static/</code> and renamed
+              (prefix stripped). SvelteKit's <code>adapter-static</code> copies
+              the <code>static/</code> directory into the build output verbatim.
+            </p>
+
+            <pre><code>frontend/static/
+├── apple-touch-icon.png         ← iOS home screen icon
+├── favicon-96x96.png            ← PNG favicon (96px)
+├── favicon.ico                  ← Legacy multi-size ICO
+├── favicon.svg                  ← Modern SVG favicon
+├── hobbylog.json                ← Hobby data (factions, etc.)
+├── robots.txt
+├── site.webmanifest             ← PWA manifest
+├── web-app-manifest-192x192.png ← PWA icon (maskable)
+└── web-app-manifest-512x512.png ← PWA icon (maskable)</code></pre>
+
+            <p>
+              The <code>site.webmanifest</code> internally references
+              <code>/web-app-manifest-192x192.png</code> and
+              <code>/web-app-manifest-512x512.png</code> — both present and
+              correctly named.
+            </p>
+          </section>
+
+          <section id="cleanup-head" data-nav="head.php Update">
+            <h2>
+              <span class="icon" style="background: rgba(108, 142, 247, 0.15)"
+                >📄</span
+              >
+              head.php Update
+            </h2>
+            <p>File: <code>site/plugins/hb-commons/snippets/head.php</code></p>
+
+            <h3>Before</h3>
+            <pre><code>&lt;link rel="shortcut icon" href="/favicon.ico"&gt;
+
+&lt;?php /*
+// TRASH, CLEAN UP
+htmlhead()-&gt;recommended_minimum()-&gt;title(...)
+  ... (28 lines of dead code)
+*/ ?&gt;</code></pre>
+
+            <h3>After</h3>
+            <pre><code>&lt;link rel="icon" href="/favicon.ico" sizes="any"&gt;
+&lt;link rel="icon" href="/favicon.svg" type="image/svg+xml"&gt;
+&lt;link rel="apple-touch-icon" href="/apple-touch-icon.png"&gt;
+&lt;link rel="manifest" href="/site.webmanifest"&gt;</code></pre>
+
+            <p>
+              Pattern: SVG first (modern browsers), ICO fallback with
+              <code>sizes="any"</code> (legacy), Apple touch icon for iOS,
+              webmanifest for PWA support.
+            </p>
+          </section>
+
+          <section id="cleanup-structure" data-nav="Resulting Structure">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >📁</span
+              >
+              Resulting Structure
+            </h2>
+            <div class="tree">
+              <span class="tree-dir">hobbylog.hendrik-berends.de/</span>
+              ├── <span class="tree-dir">content/</span>
+              <span class="tree-note"
+                >← Kirby flat-file database (gitignored)</span
+              >
+              ├── <span class="tree-dir">docs/</span>
+              <span class="tree-note">← Session logs (this file)</span> ├──
+              <span class="tree-dir">frontend/</span>
+              <span class="tree-note">← SvelteKit app</span> │ ├──
+              <span class="tree-dir">build/</span>
+              <span class="tree-note">← Static output (gitignored)</span> │ ├──
+              <span class="tree-dir">node_modules/</span>
+              <span class="tree-note">← JS deps (gitignored)</span> │ ├──
+              <span class="tree-dir">src/</span>
+              <span class="tree-note">← Svelte source</span> │ └──
+              <span class="tree-dir">static/</span>
+              <span class="tree-note">← Favicon, manifest, robots.txt</span> ├──
+              <span class="tree-dir">kirby/</span>
+              <span class="tree-note">← Kirby core (gitignored)</span> ├──
+              <span class="tree-dir">media/</span>
+              <span class="tree-note">← Kirby media cache (gitignored)</span>
+              ├── <span class="tree-dir">site/</span> │ ├──
+              <span class="tree-dir">config/</span> │ └──
+              <span class="tree-dir">plugins/</span> │ ├──
+              <span class="tree-dir">hb-commons/</span>
+              <span class="tree-note">← Shared helpers + head snippet</span> │
+              ├── <span class="tree-dir">hb-theme-hobbylog/</span>
+              <span class="tree-note"
+                >← Blueprints, snippets, templates, SCSS</span
+              >
+              │ ├── <span class="tree-dir">kirby-password-guard/</span> │ └──
+              <span class="tree-dir">kql/</span> └──
+              <span class="tree-dir">vendor/</span>
+              <span class="tree-note">← Composer packages (gitignored)</span>
+            </div>
+          </section>
+
+          <hr class="session-divider" data-label="Headless Architecture" />
+
+          <section id="headless-context" data-nav="Headless: Goals">
+            <h2>
+              <span class="icon" style="background: rgba(108, 142, 247, 0.15)"
+                >🗺️</span
+              >
+              Context &amp; Goal
+            </h2>
+            <p>
+              The hobbylog site was originally a traditional Kirby CMS
+              installation that rendered HTML server-side via PHP templates. The
+              goal was to introduce a clean separation of concerns:
+            </p>
+            <div class="card-grid">
+              <div class="card">
+                <div class="card-icon">🏛️</div>
+                <div class="card-title">Kirby — stays</div>
+                <p>
+                  Continues to serve as the content management system and data
+                  store. Now also exposes a KQL API endpoint.
+                </p>
+              </div>
+              <div class="card">
+                <div class="card-icon">⚡</div>
+                <div class="card-title">SvelteKit — new</div>
+                <p>
+                  A brand new frontend in <code>frontend/</code>. Fetches data
+                  from Kirby at build time and renders a static site.
+                </p>
+              </div>
+              <div class="card">
+                <div class="card-icon">📦</div>
+                <div class="card-title">Static deploy</div>
+                <p>
+                  ALL-INKL shared hosting doesn't run Node.js. SvelteKit uses
+                  adapter-static and the output is FTP'd.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section id="headless-stack" data-nav="Technology Stack">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >🧱</span
+              >
+              Technology Stack
+            </h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Layer</th>
+                  <th>Technology</th>
+                  <th>Version</th>
+                  <th>Role</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>CMS / API</td>
+                  <td>Kirby CMS</td>
+                  <td>v5.2</td>
+                  <td>Content management, KQL API</td>
+                </tr>
+                <tr>
+                  <td>API plugin</td>
+                  <td>getkirby/kql</td>
+                  <td>^3.0</td>
+                  <td>GraphQL-like query language over Kirby's data</td>
+                </tr>
+                <tr>
+                  <td>Frontend framework</td>
+                  <td>SvelteKit</td>
+                  <td>^2.50</td>
+                  <td>Routing, SSR / prerender, load functions</td>
+                </tr>
+                <tr>
+                  <td>UI library</td>
+                  <td>Svelte</td>
+                  <td>^5.51</td>
+                  <td>Reactive components (runes API)</td>
+                </tr>
+                <tr>
+                  <td>Styling</td>
+                  <td>Tailwind CSS</td>
+                  <td>v4 (Vite plugin)</td>
+                  <td>Utility-first CSS, no config file needed</td>
+                </tr>
+                <tr>
+                  <td>Bundler</td>
+                  <td>Vite</td>
+                  <td>^7.3</td>
+                  <td>Dev server + build tool</td>
+                </tr>
+                <tr>
+                  <td>Adapter</td>
+                  <td>@sveltejs/adapter-static</td>
+                  <td>^3.0</td>
+                  <td>Outputs a fully static site to <code>build/</code></td>
+                </tr>
+                <tr>
+                  <td>Language</td>
+                  <td>TypeScript</td>
+                  <td>^5.9</td>
+                  <td>Type safety across all frontend code</td>
+                </tr>
+                <tr>
+                  <td>Server language</td>
+                  <td>PHP</td>
+                  <td>8.2+</td>
+                  <td>Kirby runtime</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="headless-phases" data-nav="What Was Built">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)"
+                >✅</span
+              >
+              What Was Built
+            </h2>
+            <div class="timeline">
+              <div class="phase">
+                <div class="phase-title">Phase 1 — Kirby: KQL + CORS</div>
+                <p>
+                  Installed <code>getkirby/kql</code> via Composer. Added a
+                  <code>route:before</code> hook to
+                  <code>site/config/config.php</code> that sets CORS headers for
+                  <code>http://localhost:5173</code> and handles OPTIONS
+                  preflight. Disabled KQL authentication for local dev.
+                </p>
+              </div>
+              <div class="phase">
+                <div class="phase-title">Phase 2 — SvelteKit scaffold</div>
+                <p>
+                  Scaffolded a new SvelteKit app in <code>frontend/</code> with
+                  TypeScript and the minimal template. Installed
+                  <code>@sveltejs/adapter-static</code> and
+                  <code>@tailwindcss/vite</code> (Tailwind v4). Configured
+                  <code>svelte.config.js</code> to use adapter-static with
+                  <code>handleHttpError: 'warn'</code>.
+                </p>
+              </div>
+              <div class="phase">
+                <div class="phase-title">
+                  Phase 3 — TypeScript types + KQL client
+                </div>
+                <p>
+                  Defined <code>MiniatureImage</code>, <code>Miniature</code>,
+                  and <code>CollectionPage</code> interfaces in
+                  <code>src/lib/types.ts</code>. Wrote
+                  <code>fetchPages()</code> in <code>src/lib/api.ts</code> — a
+                  KQL POST that selects all flat miniature fields, resolves
+                  boolean toggles, splits multiselect strings into arrays, and
+                  fetches image URLs with 500px crop thumbs.
+                </p>
+              </div>
+              <div class="phase">
+                <div class="phase-title">Phase 4 — Page routes</div>
+                <p>
+                  Created <code>+layout.ts</code> with
+                  <code>export const prerender = true</code>. Created
+                  <code>+page.ts</code> with a try/catch load function. Created
+                  <code>+page.svelte</code> with reactive tab switching, view
+                  toggle, and filter state using Svelte 5 runes
+                  (<code>$state</code>, <code>$derived</code>).
+                </p>
+              </div>
+              <div class="phase">
+                <div class="phase-title">Phase 5 — UI components</div>
+                <p>
+                  Implemented six Tailwind-styled Svelte components:
+                  PaintProgress, FilterBar, MiniatureCard, MiniatureCards,
+                  MiniatureTable, and ImageModal. No Bootstrap dependency.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section id="headless-kirby" data-nav="Kirby Backend">
+            <h2>
+              <span class="icon" style="background: rgba(251, 191, 36, 0.15)"
+                >🔧</span
+              >
+              Kirby Backend Changes
+            </h2>
+
+            <h3>config.php additions</h3>
+            <pre><code><span class="c">// KQL — disable auth for local dev</span>
+<span class="s">'kql'</span> => [
+    <span class="s">'auth'</span> => <span class="k">false</span>,
+],
+
+<span class="c">// CORS for SvelteKit frontend</span>
+<span class="s">'hooks'</span> => [
+    <span class="s">'route:before'</span> => <span class="k">function</span> (<span class="n">$route</span>, <span class="n">$path</span>, <span class="n">$method</span>) {
+        <span class="n">$allowed</span> = [<span class="s">'http://localhost:5173'</span>];
+        <span class="n">$origin</span>  = <span class="n">$_SERVER</span>[<span class="s">'HTTP_ORIGIN'</span>] ?? <span class="s">''</span>;
+
+        <span class="k">if</span> (<span class="n">in_array</span>(<span class="n">$origin</span>, <span class="n">$allowed</span>, <span class="k">true</span>)) {
+            <span class="n">header</span>(<span class="s">'Access-Control-Allow-Origin: '</span> . <span class="n">$origin</span>);
+            <span class="n">header</span>(<span class="s">'Access-Control-Allow-Methods: GET, POST, OPTIONS'</span>);
+            <span class="n">header</span>(<span class="s">'Access-Control-Allow-Headers: Content-Type, Authorization'</span>);
+        }
+
+        <span class="k">if</span> (<span class="n">$method</span> === <span class="s">'OPTIONS'</span>) {
+            <span class="n">http_response_code</span>(<span class="n">204</span>); <span class="k">exit</span>;
+        }
+    },
+],</code></pre>
+
+            <div class="callout warn">
+              <p>
+                <strong>Production note:</strong> Set
+                <code>'kql' =&gt; ['auth' =&gt; 'kirby']</code> before
+                deploying. The current <code>false</code> setting makes the
+                entire content API public.
+              </p>
+            </div>
+          </section>
+
+          <section id="headless-scaffold" data-nav="SvelteKit Scaffold">
+            <h2>
+              <span class="icon" style="background: rgba(108, 142, 247, 0.15)"
+                >📁</span
+              >
+              SvelteKit Scaffold
+            </h2>
+
+            <div class="tree">
+              <span class="tree-dir">frontend/</span>
+              ├── <span class="tree-new">src/app.css</span>
+              <span class="tree-note"
+                >← Tailwind entry: @import 'tailwindcss'</span
+              >
+              ├── <span class="tree-new">src/lib/types.ts</span>
+              <span class="tree-note">← TypeScript interfaces</span> ├──
+              <span class="tree-new">src/lib/api.ts</span>
+              <span class="tree-note">← KQL fetch helper</span> ├──
+              <span class="tree-new">src/lib/components/</span>
+              <span class="tree-note">← All UI components</span> ├──
+              <span class="tree-new">src/routes/+layout.ts</span>
+              <span class="tree-note">← prerender = true</span> ├──
+              <span class="tree-new">src/routes/+layout.svelte</span>
+              <span class="tree-note">← imports app.css</span> ├──
+              <span class="tree-new">src/routes/+page.ts</span>
+              <span class="tree-note">← load with try/catch</span> ├──
+              <span class="tree-new">src/routes/+page.svelte</span>
+              <span class="tree-note">← main view</span> ├──
+              <span class="tree-new">svelte.config.js</span>
+              <span class="tree-note">← adapter-static</span> └──
+              <span class="tree-new">vite.config.ts</span>
+              <span class="tree-note">← Tailwind Vite plugin</span>
+            </div>
+
+            <h3>svelte.config.js</h3>
+            <pre><code><span class="k">import</span> adapter <span class="k">from</span> <span class="s">'@sveltejs/adapter-static'</span>;
+
+<span class="k">const</span> config = {
+  kit: {
+    adapter: adapter({ fallback: <span class="s">'404.html'</span> }),
+    prerender: {
+      handleHttpError: <span class="s">'warn'</span>  <span class="c">// don't fail build if Kirby is offline</span>
+    }
+  }
+};</code></pre>
+
+            <h3>vite.config.ts</h3>
+            <pre><code><span class="k">import</span> { sveltekit } <span class="k">from</span> <span class="s">'@sveltejs/kit/vite'</span>;
+<span class="k">import</span> tailwindcss <span class="k">from</span> <span class="s">'@tailwindcss/vite'</span>;
+
+<span class="k">export default</span> defineConfig({
+  plugins: [tailwindcss(), sveltekit()]
+});</code></pre>
+          </section>
+
+          <section id="headless-api" data-nav="KQL API Client">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)"
+                >🔌</span
+              >
+              KQL API Client
+            </h2>
+            <p>
+              <code>src/lib/api.ts</code> exports
+              <code>fetchPages(fetchFn?)</code>. It accepts an optional
+              <code>fetch</code> override so SvelteKit's
+              <code>+page.ts</code> load function can pass its own
+              <code>fetch</code> (which handles prerendering).
+            </p>
+
+            <h3>KQL method chaining used</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Expression</th>
+                  <th>Effect</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>page.paint_progress.toBool</code></td>
+                  <td>Kirby toggle field → PHP boolean</td>
+                </tr>
+                <tr>
+                  <td><code>page.miniatures.toStructure</code></td>
+                  <td>YAML structure field → iterable collection</td>
+                </tr>
+                <tr>
+                  <td><code>item.wished.toBool</code></td>
+                  <td>Toggle value → boolean</td>
+                </tr>
+                <tr>
+                  <td><code>item.amount.toInt</code></td>
+                  <td>Number field → integer</td>
+                </tr>
+                <tr>
+                  <td><code>item.faction_fantasy.split</code></td>
+                  <td>Multiselect string → string[]</td>
+                </tr>
+                <tr>
+                  <td><code>item.images.toFiles</code></td>
+                  <td>File references → File objects</td>
+                </tr>
+                <tr>
+                  <td><code>item.crop(500).url</code></td>
+                  <td>Kirby thumb → 500px cropped URL</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="headless-components" data-nav="UI Components">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >🧩</span
+              >
+              UI Components
+            </h2>
+            <div class="comp-list">
+              <div class="comp">
+                <div class="comp-name">PaintProgress.svelte</div>
+                <div class="comp-desc">
+                  Calculates painted/total ratio from non-wished miniatures.
+                  Renders a green progress bar with percentage label.
+                </div>
+              </div>
+              <div class="comp">
+                <div class="comp-name">FilterBar.svelte</div>
+                <div class="comp-desc">
+                  Faction dropdown (derived from current tab's miniatures) and a
+                  "Painted only" checkbox. State flows upward via
+                  <code>bind:</code>.
+                </div>
+              </div>
+              <div class="comp">
+                <div class="comp-name">MiniatureCard.svelte</div>
+                <div class="comp-desc">
+                  Displays thumbnail (grayscale if unpainted), name, and status
+                  badges. Click opens ImageModal.
+                </div>
+              </div>
+              <div class="comp">
+                <div class="comp-name">MiniatureCards.svelte</div>
+                <div class="comp-desc">
+                  Responsive grid: 2 cols mobile → 4 on sm → 6 on xl. Empty
+                  state message if no matches.
+                </div>
+              </div>
+              <div class="comp">
+                <div class="comp-name">MiniatureTable.svelte</div>
+                <div class="comp-desc">
+                  Table view: name, original name, amount, image button. One
+                  shared ImageModal instance via local <code>$state</code>.
+                </div>
+              </div>
+              <div class="comp">
+                <div class="comp-name">ImageModal.svelte</div>
+                <div class="comp-desc">
+                  Overlay using <code>role="dialog"</code>. Keyboard nav: ← / →
+                  cycle images, Esc closes. Uses <code>bind:open</code> for
+                  two-way control.
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="headless-data" data-nav="Data Model">
+            <h2>
+              <span class="icon" style="background: rgba(251, 191, 36, 0.15)"
+                >📋</span
+              >
+              Data Model
+            </h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Kirby type</th>
+                  <th>TS type</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>name</td>
+                  <td>text</td>
+                  <td>string</td>
+                  <td>German display name</td>
+                </tr>
+                <tr>
+                  <td>original_name</td>
+                  <td>text</td>
+                  <td>string</td>
+                  <td>English original</td>
+                </tr>
+                <tr>
+                  <td>genre</td>
+                  <td>radio</td>
+                  <td>'fantasy'|'scifi'|''</td>
+                  <td>Determines which faction/category fields apply</td>
+                </tr>
+                <tr>
+                  <td>faction_fantasy</td>
+                  <td>multiselect</td>
+                  <td>string[]</td>
+                  <td>via <code>.split</code></td>
+                </tr>
+                <tr>
+                  <td>faction_scifi</td>
+                  <td>multiselect</td>
+                  <td>string[]</td>
+                  <td>via <code>.split</code></td>
+                </tr>
+                <tr>
+                  <td>amount</td>
+                  <td>number</td>
+                  <td>number</td>
+                  <td>via <code>.toInt</code></td>
+                </tr>
+                <tr>
+                  <td>wished</td>
+                  <td>toggle</td>
+                  <td>boolean</td>
+                  <td>via <code>.toBool</code></td>
+                </tr>
+                <tr>
+                  <td>converted</td>
+                  <td>toggle</td>
+                  <td>boolean</td>
+                  <td>Kitbash flag</td>
+                </tr>
+                <tr>
+                  <td>painted</td>
+                  <td>toggle</td>
+                  <td>boolean</td>
+                  <td>Drives grayscale on card image</td>
+                </tr>
+                <tr>
+                  <td>special_miniature</td>
+                  <td>toggle</td>
+                  <td>boolean</td>
+                  <td>Named character / centerpiece</td>
+                </tr>
+                <tr>
+                  <td>images</td>
+                  <td>files</td>
+                  <td>MiniatureImage[]</td>
+                  <td>url + 500px crop thumb</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="headless-decisions" data-nav="Design Decisions">
+            <h2>
+              <span class="icon" style="background: rgba(108, 142, 247, 0.15)"
+                >⚖️</span
+              >
+              Design Decisions
+            </h2>
+
+            <div class="decision">
+              <div class="decision-q">
+                Why adapter-static and not adapter-node?
+              </div>
+              <div class="decision-a">
+                ALL-INKL shared hosting provides PHP but no Node.js runtime. The
+                static output can be uploaded via FTP like any other HTML/CSS/JS
+                site.
+              </div>
+            </div>
+            <div class="decision">
+              <div class="decision-q">
+                Why <code>prerender = true</code> in +layout.ts?
+              </div>
+              <div class="decision-a">
+                All routes should be pre-rendered at build time (when Kirby is
+                running). During <code>vite dev</code>, SvelteKit fetches live
+                from Kirby instead — no prerendering happens in dev mode.
+              </div>
+            </div>
+            <div class="decision">
+              <div class="decision-q">
+                Why <code>handleHttpError: 'warn'</code>?
+              </div>
+              <div class="decision-a">
+                If Kirby is offline during a build run, the prerender phase gets
+                a 500. Without this setting the build crashes. With 'warn', it
+                logs and continues.
+              </div>
+            </div>
+            <div class="decision">
+              <div class="decision-q">
+                Why not use Svelte's native <code>&lt;dialog&gt;</code> element?
+              </div>
+              <div class="decision-a">
+                The <code>&lt;dialog&gt;</code> element requires calling
+                <code>showModal()</code> via a DOM reference, which is awkward
+                with Svelte's declarative model. A
+                <code>role="dialog"</code> div with manual keyboard handling is
+                simpler.
+              </div>
+            </div>
+            <div class="decision">
+              <div class="decision-q">
+                Why Tailwind v4 (Vite plugin) and not v3?
+              </div>
+              <div class="decision-a">
+                Tailwind v4 eliminates the <code>tailwind.config.js</code> file
+                and content scan config. The
+                <code>@tailwindcss/vite</code> plugin handles everything
+                automatically via CSS <code>@import 'tailwindcss'</code>.
+              </div>
+            </div>
+          </section>
+
+          <section id="headless-gotchas" data-nav="Gotchas &amp; Fixes">
+            <h2>
+              <span class="icon" style="background: rgba(248, 113, 113, 0.15)"
+                >⚠️</span
+              >
+              Gotchas &amp; Fixes
+            </h2>
+
+            <h3>Node version conflict (Herd vs Homebrew)</h3>
+            <p>
+              Laravel Herd installs Node v16 and puts it first on
+              <code>$PATH</code>. Vite 7 and SvelteKit 2 require Node ≥ 20.
+            </p>
+            <div class="callout warn">
+              <p>
+                <strong>Workaround:</strong> Always invoke the Vite binary
+                directly with the Homebrew Node:
+              </p>
+              <pre
+                style="margin-top: 0.5rem"
+              ><code>/opt/homebrew/bin/node node_modules/.bin/vite dev
+/opt/homebrew/bin/node node_modules/.bin/vite build</code></pre>
+            </div>
+
+            <h3>Svelte a11y: <code>role="dialog"</code> needs tabindex</h3>
+            <p>
+              Svelte's accessibility linter warns that elements with interactive
+              roles need a <code>tabindex</code>. Added
+              <code>tabindex="-1"</code> to the dialog div.
+            </p>
+
+            <h3>Blueprint gap — flat vs nested miniatures</h3>
+            <p>
+              Two <code>miniatures</code> field blueprints exist:
+              <code>fields/miniatures.yml</code> (flat, targeted by SvelteKit)
+              and <code>fields/structure-miniatures.yml</code> (nested).
+              Existing content uses the nested format, so the KQL query returns
+              empty arrays until blueprint and content are migrated.
+            </p>
+          </section>
+
+          <section id="headless-workflow" data-nav="Dev Workflow">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)"
+                >▶️</span
+              >
+              Dev Workflow
+            </h2>
+
+            <h3>Starting local dev (two terminals)</h3>
+            <pre><code><span class="c"># Terminal 1 — Kirby backend</span>
+composer start
+<span class="c"># → http://localhost:8000   panel at /panel</span>
+
+<span class="c"># Terminal 2 — SvelteKit frontend</span>
+cd frontend
+/opt/homebrew/bin/node node_modules/.bin/vite dev
+<span class="c"># → http://localhost:5173</span></code></pre>
+
+            <h3>Production build</h3>
+            <pre><code>cd frontend
+/opt/homebrew/bin/node node_modules/.bin/vite build
+<span class="c"># → frontend/build/  (upload via FTP to ALL-INKL)</span></code></pre>
+          </section>
+
+          <section id="headless-nextsteps" data-nav="Next Steps">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >🔮</span
+              >
+              Next Steps
+            </h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Task</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>High</td>
+                  <td>
+                    Migrate <code>pages/default.yml</code> blueprint from
+                    <code>fields/structure-miniatures</code> to
+                    <code>fields/miniatures</code> (flat structure).
+                  </td>
+                </tr>
+                <tr>
+                  <td>High</td>
+                  <td>
+                    Migrate existing content entries from nested format to flat
+                    format.
+                  </td>
+                </tr>
+                <tr>
+                  <td>High</td>
+                  <td>Set up KQL authentication for production deployment.</td>
+                </tr>
+                <tr>
+                  <td>Medium</td>
+                  <td>
+                    Multi-page support — currently shows only
+                    <code>data.pages[0]</code>.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Medium</td>
+                  <td>Add genre filter (Fantasy / Sci-Fi) to FilterBar.</td>
+                </tr>
+                <tr>
+                  <td>Medium</td>
+                  <td>
+                    Restrict CORS origin in production config to the actual
+                    deployed domain.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Low</td>
+                  <td>FTP deployment automation.</td>
+                </tr>
+                <tr>
+                  <td>Low</td>
+                  <td>Persist view/filter state in URL query params.</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <footer>
+            <p>
+              Generated by Claude Code (claude-sonnet-4-6) · Session date:
+              2026-03-03
+            </p>
+          </footer>
+        </div>
+        <!-- /session-march-03 -->
+
+        <!-- ════════════════════════════════════════
+         SESSION: Blueprints & KQL Fixes
+         ════════════════════════════════════════ -->
+        <div id="session-blueprints-kql" class="session-panel">
+          <div class="hero">
+            <div class="meta">
+              <span class="badge badge-blue">📅 2026-03-04</span>
+              <span class="badge badge-green">✓ Completed</span>
+              <span class="badge badge-purple">Claude Code</span>
+              <span class="badge badge-amber">Session Log</span>
+            </div>
+            <h1>Blueprints &amp; KQL Fixes</h1>
+            <p>
+              Created the Kirby blueprints for the headless theme plugin, wired
+              up environment-aware panel preview URLs, and fixed the KQL query
+              so the SvelteKit frontend finally renders real miniature data.
+            </p>
+          </div>
+
+          <section id="bkql-blueprints" data-nav="Blueprints">
+            <h2>
+              <span class="icon" style="background: rgba(108, 142, 247, 0.15)"
+                >📐</span
+              >
+              Blueprints
+            </h2>
+            <p>
+              The <code>hb-theme-hobbylog</code> plugin had no
+              <code>blueprints/</code> directory — the panel was falling back to
+              hb-commons' generic default page. Two files were created:
+            </p>
+
+            <div class="tree">
+              <span class="tree-dir"
+                >site/plugins/hb-theme-hobbylog/blueprints/</span
+              >
+              <span class="tree-new"
+                >├── pages/default.yml ← Collection page (3 tabs)</span
+              >
+              <span class="tree-new"
+                >└── fields/structure-miniatures.yml ← flat structure
+                field</span
+              >
+            </div>
+
+            <h3>pages/default.yml</h3>
+            <p>Three-tab layout overriding the hb-commons generic default:</p>
+            <ul>
+              <li>
+                <strong>Miniatures</strong> — the flat miniatures structure
+                field (via <code>extends</code>)
+              </li>
+              <li>
+                <strong>Page</strong> — Notes (blocks), Paint-progress toggle,
+                Preview-image
+              </li>
+              <li>
+                <strong>Files</strong> — file manager (reuses hb-commons
+                <code>sections/files-files</code>)
+              </li>
+            </ul>
+            <p>
+              The plugin's <code>$mapFiles('blueprints', ...)</code> picks these
+              up automatically; being loaded after hb-commons alphabetically,
+              they override the generic blueprint.
+            </p>
+
+            <h3>fields/structure-miniatures.yml</h3>
+            <p>
+              Flat structure with 16 sub-fields matching the existing content
+              key names exactly: <code>name</code>, <code>original_name</code>,
+              <code>images</code>, <code>genre</code> (select: fantasy/scifi),
+              <code>faction_fantasy</code>, <code>categories_fantasy</code>,
+              <code>faction_scifi</code>, <code>categories_scifi</code>,
+              <code>amount</code>, <code>wished</code>, <code>converted</code>,
+              <code>painted</code>, <code>special_miniature</code>,
+              <code>base_size</code>, <code>material</code>,
+              <code>company</code>, <code>notes</code>. Table view columns: Name
+              / Genre / Painted.
+            </p>
+          </section>
+
+          <section id="bkql-preview-url" data-nav="Panel Preview URL">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >🔗</span
+              >
+              Panel Preview URL
+            </h2>
+            <p>
+              The panel "Open page" button was pointing to
+              <code>localhost:8000</code> (Kirby) instead of
+              <code>localhost:5173</code> (SvelteKit). Fixed using Kirby's
+              blueprint <code>preview</code> option, made environment-aware via:
+            </p>
+
+            <h3>Host-specific config files</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>File</th>
+                  <th>Sets</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>site/config/config.localhost.php</code></td>
+                  <td><code>hb.frontend_url = http://localhost:5173</code></td>
+                </tr>
+                <tr>
+                  <td>
+                    <code
+                      >site/config/config.hobbylog.hendrik-berends.de.php</code
+                    >
+                  </td>
+                  <td>
+                    <code
+                      >hb.frontend_url =
+                      https://hobbylog.hendrik-berends.de</code
+                    >
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>Page model</h3>
+            <p>
+              A <code>DefaultPage</code> class was added to
+              <code>hb-theme-hobbylog/index.php</code>, overriding Kirby v5's
+              <code
+                >previewUrl(VersionId|string $versionId = 'latest'):
+                ?string</code
+              >:
+            </p>
+            <pre><code><span class="k">class</span> <span class="n">DefaultPage</span> <span class="k">extends</span> Page
+{
+    <span class="k">public function</span> <span class="n">previewUrl</span>(\Kirby\Content\VersionId|<span class="k">string</span> $versionId = <span class="s">'latest'</span>): ?<span class="k">string</span>
+    {
+        $base = <span class="n">option</span>(<span class="s">'hb.frontend_url'</span>, <span class="s">'http://localhost:5173'</span>);
+        <span class="k">return</span> <span class="n">rtrim</span>($base, <span class="s">'/'</span>);
+    }
+}</code></pre>
+            <p>
+              Registered via
+              <code>'pageModels' =&gt; ['default' =&gt; 'DefaultPage']</code> in
+              the plugin. Kirby auto-selects the right config file by HTTP
+              hostname — no manual switching needed.
+            </p>
+            <p
+              class="note"
+              style="
+                background: rgba(251, 191, 36, 0.08);
+                border: 1px solid rgba(251, 191, 36, 0.2);
+                border-radius: 8px;
+                padding: 0.75rem 1rem;
+                color: var(--amber);
+                font-size: 0.85rem;
+              "
+            >
+              ⚠️ Once per-collection routes exist in SvelteKit, update
+              <code>previewUrl()</code> to return
+              <code>rtrim($base, '/') . '/' . $this->slug()</code>.
+            </p>
+          </section>
+
+          <section id="bkql-kql-fixes" data-nav="KQL Fixes">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)"
+                >🔧</span
+              >
+              KQL Query Fixes
+            </h2>
+            <p>
+              The frontend was showing "No pages found." despite the API being
+              reachable. Root cause: the KQL query in
+              <code>frontend/src/lib/api.ts</code> used wrong aliases.
+            </p>
+
+            <h3>Wrong alias: <code>item</code> → <code>structureItem</code></h3>
+            <p>
+              In Kirby KQL v3, the alias for a
+              <code>StructureObject</code> within a nested select is
+              <code>structureItem</code> (defined as <code>CLASS_ALIAS</code> in
+              <code>kql/src/Kql/Interceptors/Cms/StructureObject.php</code>).
+              All <code>item.fieldname.method</code> references were updated to
+              <code>structureItem.fieldname.method</code>.
+            </p>
+
+            <h3>
+              Wrong alias in nested image query: <code>structureItem</code> →
+              <code>file</code>
+            </h3>
+            <p>
+              Within the <code>images</code> nested query (<code
+                >"query": "structureItem.images.toFiles"</code
+              >), the select context changes — each item is now a
+              <code>File</code> object with alias <code>file</code>. Fixed:
+            </p>
+            <pre><code><span class="c">// Before (wrong)</span>
+<span class="s">"thumb"</span>: <span class="s">"structureItem.crop(500).url"</span>
+
+<span class="c">// After (correct)</span>
+<span class="s">"thumb"</span>: <span class="s">"file.crop(500).url"</span></code></pre>
+
+            <h3>Duplicate each-block key</h3>
+            <p>
+              Both <code>MiniatureCards.svelte</code> and
+              <code>MiniatureTable.svelte</code> used
+              <code>miniature.name + miniature.original_name</code> as the
+              Svelte keyed-each key. This collided when names are empty (e.g.
+              <code>1_testpage</code> which uses the old nested format). Fixed
+              by including the index:
+            </p>
+            <pre><code><span class="c">// Before</span>
+{#each miniatures as miniature (miniature.name + miniature.original_name)}
+
+<span class="c">// After</span>
+{#each miniatures as miniature, i (`${i}-${miniature.name}`)}</code></pre>
+          </section>
+
+          <section id="bkql-status" data-nav="Current Status">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)"
+                >✅</span
+              >
+              Current Status
+            </h2>
+            <p>
+              The SvelteKit frontend at <code>localhost:5173</code> now renders
+              published collection pages with full miniature data, images, and
+              working filters. The Kirby panel "Open page" button leads to the
+              SvelteKit frontend.
+            </p>
+            <p>
+              Content is served from published pages in <code>content/</code>.
+              Drafts in <code>content/_drafts/</code> already use the flat field
+              format and are ready to publish.
+            </p>
+            <p>
+              <code>1_testpage</code> still uses the old nested format —
+              unpublish or repurpose it to avoid it appearing as
+              <code>pages[0]</code>.
+            </p>
+          </section>
+
+          <section id="bkql-nextsteps" data-nav="Next Steps">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >🔮</span
+              >
+              Next Steps
+            </h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Task</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>High</td>
+                  <td>
+                    Migrate or remove <code>1_testpage</code> (still uses old
+                    nested miniatures format).
+                  </td>
+                </tr>
+                <tr>
+                  <td>High</td>
+                  <td>Set up KQL authentication for production deployment.</td>
+                </tr>
+                <tr>
+                  <td>High</td>
+                  <td>
+                    Multi-page routing — add <code>src/routes/[slug]/</code> in
+                    SvelteKit; update <code>previewUrl()</code> to include slug;
+                    home page becomes collection index.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Medium</td>
+                  <td>Add genre filter (Fantasy / Sci-Fi) to FilterBar.</td>
+                </tr>
+                <tr>
+                  <td>Medium</td>
+                  <td>
+                    Restrict CORS origin in production config to the actual
+                    deployed domain.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Low</td>
+                  <td>FTP deployment automation.</td>
+                </tr>
+                <tr>
+                  <td>Low</td>
+                  <td>Persist view/filter state in URL query params.</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <footer>
+            <p>
+              Generated by Claude Code (claude-sonnet-4-6) · Session date:
+              2026-03-04
+            </p>
+          </footer>
+        </div>
+        <!-- /session-blueprints-kql -->
+
+        <div id="session-march-05" class="session-panel">
+          <div class="hero">
+            <div class="meta">
+              <span class="badge badge-blue">📅 2026-03-05</span>
+              <span class="badge badge-green">✓ Completed</span>
+              <span class="badge badge-purple">Claude Code</span>
+              <span class="badge badge-amber">Session Log</span>
+            </div>
+            <h1>Routing, Filters, Stats, UI &amp; Cleanup</h1>
+            <p>
+              Implemented multi-page routing, genre filter with URL state, Kirby
+              panel UX improvements, stats donuts, paint progress bars, and
+              automatic dark mode. Then removed all legacy Kirby plugins,
+              migrated their useful parts to native locations, ran a full
+              codebase checkup, and fixed all identified issues.
+            </p>
+          </div>
+
+          <section data-nav="Multi-Page Routing" id="rfs-routing">
+            <h2>
+              <span class="icon" style="background: rgba(108, 142, 247, 0.15)"
+                >🗺️</span
+              >
+              Multi-Page Routing
+            </h2>
+            <p>
+              The frontend previously hardcoded <code>pages[0]</code>. Now each
+              published Kirby page has its own URL.
+            </p>
+            <h3>api.ts refactor</h3>
+            <p>
+              Extracted <code>MINIATURE_SELECT</code> and
+              <code>PAGE_SELECT</code> constants and a shared
+              <code>kql()</code> helper to eliminate duplication. Added
+              <code>fetchPage(slug)</code> which queries
+              <code>page('slug')</code> via KQL.
+            </p>
+            <h3>New routes</h3>
+            <ul>
+              <li>
+                <code>src/routes/+page.svelte</code> — rewritten as a collection
+                index grid, links to <code>/{slug}</code>
+              </li>
+              <li>
+                <code>src/routes/[slug]/+page.ts</code> — load function calling
+                <code>fetchPage(params.slug)</code>, throws 404/500 on failure
+              </li>
+              <li>
+                <code>src/routes/[slug]/+page.svelte</code> — full collection
+                view (tabs, filters, cards/table) moved here, with a "← All
+                Collections" back link
+              </li>
+            </ul>
+            <p>
+              SvelteKit prerenders <code>[slug]</code> routes automatically by
+              crawling links from the index page — no manual
+              <code>entries()</code> needed.
+            </p>
+            <h3>Kirby previewUrl</h3>
+            <p>
+              Updated <code>DefaultPage::previewUrl()</code> in
+              <code>hb-theme-hobbylog/index.php</code> to return
+              <code>rtrim($base, '/') . '/' . $this->slug()</code> so the panel
+              "Open" button goes to the correct collection URL.
+            </p>
+          </section>
+
+          <section data-nav="Dev Commands" id="rfs-commands">
+            <h2>
+              <span class="icon" style="background: rgba(251, 191, 36, 0.15)"
+                >🛠️</span
+              >
+              Dev Commands (Makefile)
+            </h2>
+            <p>
+              Added a <code>Makefile</code> at the project root with two
+              targets:
+            </p>
+            <pre><code>make backend    # composer start → Kirby on localhost:8000
+make frontend   # vite dev → SvelteKit on localhost:5173</code></pre>
+            <p>
+              The Makefile uses <code>/opt/homebrew/bin/node</code> directly for
+              the frontend target, bypassing Herd's Node v16. README updated
+              accordingly.
+            </p>
+          </section>
+
+          <section data-nav="Panel UX" id="rfs-panel">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >⚙️</span
+              >
+              Panel UX Improvements
+            </h2>
+            <h3>Auto-sort by title</h3>
+            <p>
+              Added <code>sortBy: title asc</code> and
+              <code>num: "{{ page.title }}"</code> to
+              <code>sections/pages-published-site.yml</code>. Pages are now
+              sorted alphabetically in the panel, with no manual drag handle.
+              The <code>num</code> setting also ensures
+              <code>site.children.listed</code> returns pages in title order.
+            </p>
+            <p>
+              <strong>Note:</strong> Existing pages keep their old
+              <code>num</code> prefix until re-published.
+            </p>
+            <h3>Separated system pages</h3>
+            <p>The left column of the site blueprint now shows two sections:</p>
+            <ul>
+              <li>
+                <strong>Pages</strong> — collection pages only (<code
+                  >template: default</code
+                >)
+              </li>
+              <li>
+                <strong>System</strong> — home and error pages (<code
+                  >template: [home, error]</code
+                >)
+              </li>
+            </ul>
+            <p>
+              Added <code>sections/pages-system-site.yml</code> and updated
+              <code>site.yml</code> to include it.
+            </p>
+            <h3>Home page previewUrl</h3>
+            <p>
+              Added a <code>HomePage</code> page model in
+              <code>hb-theme-hobbylog/index.php</code> whose
+              <code>previewUrl()</code> returns the frontend root URL (without a
+              slug). The panel "Open" button on the home page now correctly
+              links to <code>http://localhost:5173</code>.
+            </p>
+          </section>
+
+          <section data-nav="Genre Filter &amp; URL State" id="rfs-filters">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)"
+                >🔍</span
+              >
+              Genre Filter &amp; URL State
+            </h2>
+            <h3>Genre filter (#4)</h3>
+            <p>
+              Added <code>selectedGenre</code> as a bindable prop to
+              <code>FilterBar.svelte</code>. A Genre dropdown (All / Fantasy /
+              Sci-Fi) was added above the Faction dropdown. The faction list
+              narrows to only factions relevant to the selected genre. Changing
+              genre resets the faction selection via an
+              <code>onchange</code> handler (fires only on user interaction, not
+              programmatic updates).
+            </p>
+            <p>
+              Filter logic in <code>[slug]/+page.svelte</code> gained a genre
+              check:
+              <code
+                >if (selectedGenre && m.genre !== selectedGenre) return
+                false</code
+              >.
+            </p>
+            <h3>URL state (#7)</h3>
+            <p>
+              All five UI state variables (<code>tab</code>, <code>view</code>,
+              <code>genre</code>, <code>faction</code>, <code>painted</code>)
+              are now reflected in the URL as query params. Defaults are omitted
+              to keep URLs clean.
+            </p>
+            <p>Implementation pattern:</p>
+            <ul>
+              <li>
+                <code>onMount</code> reads
+                <code>window.location.search</code> and sets state from URL
+                (avoids SSR hydration mismatch)
+              </li>
+              <li>
+                A <code>mounted</code> flag (<code>$state(false)</code>) guards
+                the sync effect
+              </li>
+              <li>
+                A <code>$effect</code> (runs only after
+                <code>mounted = true</code>) builds a
+                <code>URLSearchParams</code> from current state and calls
+                <code
+                  >goto(url, { replaceState: true, keepFocus: true, noScroll:
+                  true })</code
+                >
+              </li>
+            </ul>
+            <p>
+              Links are now shareable and the browser back button works as
+              expected.
+            </p>
+          </section>
+
+          <section data-nav="Stats &amp; Donuts" id="rfs-stats">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >📊</span
+              >
+              Overview Stats &amp; Donut Charts
+            </h2>
+            <p>
+              The index page (<code>/</code>) now shows a stats card above the
+              collection grid with three SVG donut charts built from scratch (no
+              chart library dependency).
+            </p>
+            <h3>DonutChart.svelte</h3>
+            <p>
+              Reusable SVG component using <code>stroke-dasharray</code> /
+              <code>stroke-dashoffset</code> on a circle. Props:
+              <code>value</code>, <code>total</code>, <code>color</code>,
+              <code>trackColor</code> (optional, default gray — used to give the
+              "remainder" a colour for the genre split), <code>label</code>.
+              Shows value and <code>of {total}</code> in the center.
+            </p>
+            <h3>Stats computed</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Stat</th>
+                  <th>How counted</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Owned total</td>
+                  <td>Sum of <code>amount</code> for non-wished miniatures</td>
+                </tr>
+                <tr>
+                  <td>Painted</td>
+                  <td>
+                    Sum of <code>amount</code> for painted, non-wished
+                    miniatures
+                  </td>
+                </tr>
+                <tr>
+                  <td>Wishlist</td>
+                  <td>
+                    Count of entries with <code>wished: true</code> (amount is 0
+                    for these)
+                  </td>
+                </tr>
+                <tr>
+                  <td>Fantasy / Sci-Fi</td>
+                  <td>Sum of <code>amount</code> by genre, non-wished only</td>
+                </tr>
+              </tbody>
+            </table>
+            <h3>Three donuts</h3>
+            <ul>
+              <li>
+                <strong>Painted</strong> — painted / owned (green, gray track)
+              </li>
+              <li>
+                <strong>Wishlist</strong> — wished entries / all entries (amber,
+                gray track)
+              </li>
+              <li>
+                <strong>Fantasy / Sci-Fi</strong> — fantasy amount / genre total
+                (purple fill, blue track for Sci-Fi)
+              </li>
+            </ul>
+            <p>
+              Collection cards use <code>flex flex-col h-full</code> with
+              <code>mt-auto</code> on the meta line so all cards in a row share
+              equal height with the title at top and counts at bottom.
+            </p>
+          </section>
+
+          <section data-nav="Next Steps" id="rfs-next">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >🔮</span
+              >
+              Next Steps
+            </h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Task</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><s>High</s></td>
+                  <td>
+                    <s>Set up KQL authentication for production deployment.</s>
+                    ✓ Done this session.
+                  </td>
+                </tr>
+                <tr>
+                  <td><s>Medium</s></td>
+                  <td>
+                    <s
+                      >Restrict CORS origin in production config to the actual
+                      deployed domain.</s
+                    >
+                    ✓ Done this session.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Low</td>
+                  <td>FTP deployment automation.</td>
+                </tr>
+                <tr>
+                  <td>Low</td>
+                  <td>
+                    Consider <code>.htaccess</code> Basic Auth on the static
+                    frontend if access restriction is needed.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section data-nav="Docs Housekeeping" id="rfs-docs">
+            <h2>
+              <span class="icon" style="background: rgba(251, 191, 36, 0.15)"
+                >🧹</span
+              >
+              Docs Housekeeping
+            </h2>
+            <p>
+              After adding this session's content, two formatting
+              inconsistencies in <code>docs/index.html</code> were corrected and
+              a styleguide was written for future reference.
+            </p>
+
+            <h3>Session panel hero block</h3>
+            <p>
+              Today's session panel was initially written without the
+              <code>.hero</code> block present in all previous sessions. Fixed
+              by:
+            </p>
+            <ul>
+              <li>
+                Replacing the plain
+                <code>&lt;section data-nav="Overview"&gt;</code> header with a
+                proper <code>&lt;div class="hero"&gt;</code> containing the four
+                badges and a gradient <code>&lt;h1&gt;</code>
+              </li>
+              <li>
+                Adding <code>&lt;span class="icon"&gt;</code> decorators to all
+                six bare <code>&lt;h2&gt;</code> elements, with colours matching
+                the icon colour convention (blue → routing/layout, amber →
+                tooling, purple → components/next steps, green → filters/fixes)
+              </li>
+            </ul>
+
+            <h3>List styling</h3>
+            <p>
+              No CSS rule existed for <code>ul</code>/<code>li</code>. Older
+              sessions worked around this with inline
+              <code
+                >style="color:var(--muted);padding-left:1.5rem;margin-bottom:0.75rem"</code
+              >
+              on every <code>&lt;ul&gt;</code>; today's session used bare
+              unstyled <code>&lt;ul&gt;</code> elements. Fixed by:
+            </p>
+            <ul>
+              <li>
+                Adding
+                <code
+                  >ul, ol { color: var(--muted); padding-left: 1.5rem;
+                  margin-bottom: 0.75rem; }</code
+                >
+                and <code>li + li { margin-top: 0.2rem; }</code> to the
+                stylesheet
+              </li>
+              <li>
+                Removing all inline <code>style="..."</code> attributes from
+                <code>&lt;ul&gt;</code> elements in the Cleanup and Blueprints
+                &amp; KQL sessions
+              </li>
+            </ul>
+
+            <h3>Styleguide</h3>
+            <p>
+              Created <code>memory/docs-styleguide.md</code> — a reference for
+              writing new session panels consistently, covering: session
+              skeleton, icon colour conventions, and markup patterns for every
+              element type (lists, code blocks, tables, callouts, file trees,
+              cards, timelines, component lists, decision blocks). Linked from
+              <code>memory/MEMORY.md</code>.
+            </p>
+          </section>
+
+          <hr class="session-divider" data-label="UI Enhancements" />
+
+          <section data-nav="Paint Progress on Cards" id="uie-progress">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)"
+                >🎨</span
+              >
+              Paint Progress on Cards
+            </h2>
+            <p>
+              The collection index grid previously showed only a miniature count
+              and wishlist count per card. A compact paint progress bar was
+              added to each card showing the percentage of owned minis that are
+              painted.
+            </p>
+
+            <h3>Implementation</h3>
+            <p>
+              Done inline in <code>src/routes/+page.svelte</code> using Svelte's
+              <code>@const</code> tag inside the <code>#each</code> block — no
+              additional component import needed:
+            </p>
+            <pre><code>{@const owned = page.miniatures.filter((m) => !m.wished)}
+{@const ownedAmt = owned.reduce((s, m) => s + m.amount, 0)}
+{@const paintedAmt = owned.filter((m) => m.painted).reduce((s, m) => s + m.amount, 0)}
+{@const pct = ownedAmt > 0 ? Math.round((paintedAmt / ownedAmt) * 1000) / 10 : 0}</code></pre>
+
+            <div class="decision">
+              <div class="decision-q">
+                Why inline instead of reusing <code>PaintProgress.svelte</code>?
+              </div>
+              <div class="decision-a">
+                <code>PaintProgress.svelte</code> has a hardcoded
+                <code>mb-6</code> margin and a "Bemalfortschritt" label — both
+                are appropriate for the detail page but too heavy for a card. An
+                inline bar avoids modifying the shared component or adding a
+                compact-mode prop.
+              </div>
+            </div>
+
+            <h3>Counting method</h3>
+            <p>
+              Uses <code>amount</code> (sum of miniature counts), consistent
+              with the global stats donuts on the index page. At 100% the bar
+              fills completely green. At 0% it collapses to nothing (no empty
+              label shown).
+            </p>
+          </section>
+
+          <section data-nav="Dark Mode" id="uie-darkmode">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >🌙</span
+              >
+              Dark Mode
+            </h2>
+            <p>
+              Automatic dark mode added to the entire SvelteKit frontend,
+              responding to the OS <code>prefers-color-scheme</code> media
+              query. No toggle button or localStorage needed — pure CSS.
+            </p>
+
+            <h3>Approach</h3>
+            <p>
+              Tailwind v4's <code>dark:</code> variant prefix is used
+              throughout. Tailwind v4 generates
+              <code>@media (prefers-color-scheme: dark)</code> rules for all
+              <code>dark:</code> utilities — no configuration file change
+              required.
+            </p>
+
+            <div class="decision">
+              <div class="decision-q">Automatic (OS) vs. manual toggle?</div>
+              <div class="decision-a">
+                Automatic chosen for simplicity. The static site has no
+                server-side session, so a manual toggle would need
+                <code>localStorage</code> + a small JS snippet to avoid
+                flash-of-wrong-theme on load. Automatic avoids all of that.
+              </div>
+            </div>
+
+            <h3>Files changed</h3>
+            <div class="comp-list">
+              <div class="comp">
+                <div class="comp-name">app.css</div>
+                <div class="comp-desc">
+                  Added <code>--chart-track</code> CSS variable:
+                  <code>#e5e7eb</code> in light, <code>#374151</code> in dark.
+                </div>
+              </div>
+              <div class="comp">
+                <div class="comp-name">DonutChart.svelte</div>
+                <div class="comp-desc">
+                  Track circle uses <code>style="stroke: {trackColor}"</code> so
+                  CSS variables work (SVG presentation attributes don't support
+                  <code>var()</code>). Default changed from
+                  <code>#e5e7eb</code> to <code>var(--chart-track)</code>. SVG
+                  text fills replaced with Tailwind classes:
+                  <code>fill-gray-900 dark:fill-white</code> and
+                  <code>fill-gray-400 dark:fill-gray-500</code>.
+                </div>
+              </div>
+              <div class="comp">
+                <div class="comp-name">+page.svelte (index)</div>
+                <div class="comp-desc">
+                  Page background, header, stats card, and collection cards all
+                  get <code>dark:bg-gray-800</code> /
+                  <code>dark:border-gray-700</code> variants. Text and progress
+                  bar track updated.
+                </div>
+              </div>
+              <div class="comp">
+                <div class="comp-name">[slug]/+page.svelte</div>
+                <div class="comp-desc">
+                  Header, tab nav, tab count badges, view toggle. Tab and view
+                  buttons refactored from Svelte <code>class:</code> directives
+                  to computed class strings — <code>class:</code> doesn't
+                  compose with <code>dark:</code> modifiers.
+                </div>
+              </div>
+              <div class="comp">
+                <div class="comp-name">FilterBar.svelte</div>
+                <div class="comp-desc">
+                  Labels: <code>dark:text-gray-300</code>. Selects:
+                  <code
+                    >dark:bg-gray-800 dark:border-gray-600
+                    dark:text-gray-200</code
+                  >.
+                </div>
+              </div>
+              <div class="comp">
+                <div class="comp-name">MiniatureCard.svelte</div>
+                <div class="comp-desc">
+                  Card bg, image placeholder bg, miniature name, all three badge
+                  types (painted / converted / special): translucent dark
+                  backgrounds (<code>dark:bg-*-900/50</code>) with lighter text.
+                </div>
+              </div>
+              <div class="comp">
+                <div class="comp-name">MiniatureTable.svelte</div>
+                <div class="comp-desc">
+                  Table wrapper border, thead bg, all th/td text, row hover,
+                  dividers.
+                </div>
+              </div>
+              <div class="comp">
+                <div class="comp-name">ImageModal.svelte</div>
+                <div class="comp-desc">
+                  Dialog bg, header border, title/subtitle text, close button,
+                  nav buttons (border + hover), image counter text.
+                </div>
+              </div>
+              <div class="comp">
+                <div class="comp-name">PaintProgress.svelte</div>
+                <div class="comp-desc">
+                  Label text: <code>dark:text-gray-400</code>. Track bar:
+                  <code>dark:bg-gray-700</code>.
+                </div>
+              </div>
+            </div>
+
+            <h3>Gotcha: SVG presentation attributes and CSS variables</h3>
+            <div class="callout warn">
+              <p>
+                <strong
+                  >SVG <code>stroke="{value}"</code> does not evaluate CSS
+                  variables.</strong
+                >
+                The DonutChart's track circle used
+                <code>stroke={trackColor}</code> (a Svelte attribute binding),
+                which sets the SVG presentation attribute directly — bypassing
+                the CSS cascade entirely. Switching to
+                <code>style="stroke: {trackColor}"</code> routes it through CSS,
+                where <code>var(--chart-track)</code> resolves correctly.
+              </p>
+            </div>
+
+            <h3>
+              Gotcha: Svelte <code>class:</code> directive and Tailwind
+              modifiers
+            </h3>
+            <div class="callout warn">
+              <p>
+                <strong
+                  ><code>class:dark:text-gray-400={condition}</code> does not
+                  work as intended.</strong
+                >
+                While Svelte will technically add the class name string
+                <code>dark:text-gray-400</code> to the element, Tailwind v4 only
+                generates CSS for classes it detects statically during the build
+                scan — a dynamically toggled <code>dark:</code> class may not be
+                included. The safe pattern is to use a computed class string in
+                the template literal:
+                <code
+                  >class="{condition ? 'text-blue-600' : 'text-gray-600
+                  dark:text-gray-400'}"</code
+                >.
+              </p>
+            </div>
+          </section>
+
+          <hr
+            class="session-divider"
+            data-label="Plugin Cleanup &amp; Checkup"
+          />
+
+          <section data-nav="Plugin Removal" id="rfs-plugin-removal">
+            <h2>
+              <span class="icon" style="background: rgba(248, 113, 113, 0.15)"
+                >🗑️</span
+              >
+              Plugin Removal
+            </h2>
+            <p>
+              Three plugins were removed. Useful contents were migrated to
+              standard Kirby locations first.
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Plugin</th>
+                  <th>Status</th>
+                  <th>What was kept</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>hb-theme-hobbylog</code></td>
+                  <td>Deleted</td>
+                  <td>
+                    Blueprints → <code>site/blueprints/</code>; page models →
+                    <code>site/models/</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>hb-commons</code></td>
+                  <td>Deleted</td>
+                  <td>
+                    Nothing — all rendering/template infrastructure, unused in
+                    headless setup
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>kirby-password-guard</code></td>
+                  <td>Deleted</td>
+                  <td>
+                    Nothing — a <code>.htaccess</code> Basic Auth is the right
+                    approach if needed later
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3
+              style="
+                margin-top: 1.25rem;
+                color: var(--text);
+                font-size: 0.9rem;
+                font-weight: 600;
+              "
+            >
+              Migrated files
+            </h3>
+            <div class="tree">
+              <span class="tree-dir">site/</span>
+              ├── <span class="tree-dir">blueprints/</span>
+              <span class="tree-note">← new (was in plugin)</span> │ ├──
+              <span class="tree-dir">pages/</span> │ │ └──
+              <span class="tree-new">default.yml</span>
+              <span class="tree-note">Collection blueprint (3 tabs)</span> │ ├──
+              <span class="tree-dir">fields/</span> │ │ └──
+              <span class="tree-new">structure-miniatures.yml</span>
+              <span class="tree-note">16-field miniature structure</span> │ └──
+              <span class="tree-dir">sections/</span> │ └──
+              <span class="tree-new">files-files.yml</span>
+              <span class="tree-note">Files section for Files tab</span> └──
+              <span class="tree-dir">models/</span>
+              <span class="tree-note">← new (was in plugin)</span> ├──
+              <span class="tree-new">default.php</span>
+              <span class="tree-note"
+                >DefaultPage — previewUrl → SvelteKit slug</span
+              >
+              └── <span class="tree-new">home.php</span>
+              <span class="tree-note"
+                >HomePage — previewUrl → SvelteKit root</span
+              >
+            </div>
+            <p style="margin-top: 1rem">
+              The <code>theme</code> and <code>plugins</code> options were
+              removed from <code>config.php</code> — Kirby auto-discovers
+              <code>site/blueprints/</code> and <code>site/models/</code> with
+              no registration needed. Only active plugin remaining:
+              <code>kql</code>.
+            </p>
+          </section>
+
+          <section data-nav="Codebase Checkup" id="rfs-checkup">
+            <h2>
+              <span class="icon" style="background: rgba(108, 142, 247, 0.15)"
+                >🔍</span
+              >
+              Codebase Checkup
+            </h2>
+            <p>
+              A full audit was run across backend and frontend. All findings
+              were fixed in the same session.
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Issue</th>
+                  <th>Severity</th>
+                  <th>Location</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Hardcoded Kirby URL in frontend build</td>
+                  <td><span style="color: var(--red)">High</span></td>
+                  <td><code>frontend/src/lib/api.ts:3</code></td>
+                </tr>
+                <tr>
+                  <td>KQL auth disabled globally (incl. production)</td>
+                  <td><span style="color: var(--red)">High</span></td>
+                  <td><code>site/config/config.php</code></td>
+                </tr>
+                <tr>
+                  <td>CORS origin hardcoded to localhost</td>
+                  <td><span style="color: var(--red)">High</span></td>
+                  <td><code>site/config/config.php</code></td>
+                </tr>
+                <tr>
+                  <td>Missing <code>sections/files-files</code> blueprint</td>
+                  <td><span style="color: var(--amber)">Medium</span></td>
+                  <td><code>site/blueprints/pages/default.yml:36</code></td>
+                </tr>
+                <tr>
+                  <td>Unused <code>@sveltejs/adapter-auto</code> dependency</td>
+                  <td><span style="color: var(--green)">Low</span></td>
+                  <td><code>frontend/package.json</code></td>
+                </tr>
+                <tr>
+                  <td>Stale plugin entries in <code>.gitignore</code></td>
+                  <td><span style="color: var(--green)">Low</span></td>
+                  <td><code>.gitignore</code></td>
+                </tr>
+                <tr>
+                  <td>
+                    <code>pechente/kirby-password-guard</code> still in
+                    <code>composer.json</code>
+                  </td>
+                  <td><span style="color: var(--green)">Low</span></td>
+                  <td><code>composer.json</code></td>
+                </tr>
+                <tr>
+                  <td>
+                    <code>$derived(() =&gt; …)</code> wraps a function instead
+                    of a value
+                  </td>
+                  <td><span style="color: var(--green)">Low</span></td>
+                  <td><code>FilterBar.svelte:16</code></td>
+                </tr>
+                <tr>
+                  <td>Each-block keys depend on array index</td>
+                  <td><span style="color: var(--green)">Low</span></td>
+                  <td><code>MiniatureCards.svelte:12</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section data-nav="Checkup Fixes" id="rfs-checkup-fixes">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)"
+                >✅</span
+              >
+              Checkup Fixes
+            </h2>
+
+            <h3 style="color: var(--text); font-size: 0.9rem; font-weight: 600">
+              Production-readiness
+            </h3>
+            <ul>
+              <li>
+                <strong>Kirby URL as env var</strong> —
+                <code>PUBLIC_KIRBY_URL</code> replaces the hardcoded constant in
+                <code>api.ts</code>. <code>frontend/.env</code> sets
+                <code>http://localhost:8000</code> for local dev;
+                <code>frontend/.env.production</code> is empty so the production
+                build uses a relative path (<code>/api/query</code>) — correct
+                for same-origin hosting on ALL-INKL.
+              </li>
+              <li>
+                <strong>KQL auth in production</strong> —
+                <code>config.hobbylog.hendrik-berends.de.php</code> now
+                overrides <code>'kql' =&gt; ['auth' =&gt; true]</code>. Local
+                dev retains <code>auth: false</code> in the base config.
+              </li>
+              <li>
+                <strong>Dynamic CORS</strong> — Hardcoded
+                <code>['http://localhost:5173']</code> replaced by
+                <code>[option('hb.frontend_url', 'http://localhost:5173')]</code
+                >, so the production config automatically permits the production
+                frontend origin.
+              </li>
+            </ul>
+
+            <h3
+              style="
+                margin-top: 1.25rem;
+                color: var(--text);
+                font-size: 0.9rem;
+                font-weight: 600;
+              "
+            >
+              Housekeeping
+            </h3>
+            <ul>
+              <li>
+                Created <code>site/blueprints/sections/files-files.yml</code> —
+                fixes the broken Files tab in the panel
+              </li>
+              <li>
+                Removed <code>@sveltejs/adapter-auto</code> from
+                <code>frontend/package.json</code>
+              </li>
+              <li>
+                Removed stale plugin whitelist lines from
+                <code>.gitignore</code>; scoped <code>.env</code> to root-level
+                only (<code>/.env</code>) so <code>frontend/.env*</code> are
+                tracked
+              </li>
+              <li>
+                Removed <code>pechente/kirby-password-guard</code> from
+                <code>composer.json</code>
+              </li>
+            </ul>
+
+            <h3
+              style="
+                margin-top: 1.25rem;
+                color: var(--text);
+                font-size: 0.9rem;
+                font-weight: 600;
+              "
+            >
+              Svelte 5 correctness
+            </h3>
+            <ul>
+              <li>
+                <strong>FilterBar.svelte</strong> —
+                <code>$derived(() =&gt; { … })</code> →
+                <code>$derived.by(() =&gt; { … })</code>; removed the spurious
+                <code>()</code> call-site in the template. The derived value is
+                now a proper reactive array, not a function wrapper.
+              </li>
+              <li>
+                <strong>MiniatureCards.svelte</strong> — Each-block key changed
+                from <code>`${i}-${miniature.name}`</code> (index-dependent) to
+                <code>miniature.original_name || miniature.name</code> (stable
+                identity key).
+              </li>
+            </ul>
+          </section>
+
+          <footer>
+            <p>
+              Generated by Claude Code (claude-sonnet-4-6) · Session date:
+              2026-03-05
+            </p>
+          </footer>
+        </div>
+        <!-- /session-march-05 -->
+
+        <!-- ════════════════════════════════════════
+         SESSION: Search, Sort & Stats
+         ════════════════════════════════════════ -->
+        <div id="session-march-06-ui" class="session-panel">
+          <div class="hero">
+            <div class="meta">
+              <span class="badge badge-blue">📅 2026-03-06</span>
+              <span class="badge badge-green">✓ Completed</span>
+              <span class="badge badge-purple">Claude Code</span>
+              <span class="badge badge-amber">Session Log</span>
+            </div>
+            <h1>Search, Sort &amp; Stats</h1>
+            <p>
+              A full session covering the project's development philosophy, then
+              adding search, sorting, per-faction stats, a global painting
+              queue, and several UX refinements to the SvelteKit frontend.
+            </p>
+          </div>
+
+          <section data-nav="README — About Blurb" id="march-06-readme">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >💬</span
+              >
+              README — About Blurb
+            </h2>
+            <p>
+              The session opened with a question about whether this project
+              counts as "vibe coding". The conclusion: not quite.
+            </p>
+            <div class="decision">
+              <div class="decision-q">Is this vibe coding?</div>
+              <div class="decision-a">
+                <strong>AI-assisted deliberate development</strong> —
+                architectural decisions, trade-offs, and data models are
+                reasoned through intentionally, with Claude Code handling the
+                implementation. The steering is human, the typing is shared.
+              </div>
+            </div>
+            <p>
+              That framing was added to <code>README.md</code> as a dedicated
+              <strong>About</strong> section:
+            </p>
+            <pre><code><span class="k">##</span> <span class="n">About</span>
+
+This project is built through <span class="s">**AI-assisted deliberate development**</span> —
+architectural decisions, trade-offs, and data models are reasoned through
+intentionally, with Claude Code handling the implementation. It's not vibe
+coding: the steering is human, the typing is shared.
+
+A running log of sessions, decisions, and design rationale lives in
+[<span class="s">`docs/`</span>](docs/).</code></pre>
+          </section>
+
+          <section data-nav="Overview" id="sss-overview">
+            <h2>
+              <span class="icon" style="background: rgba(108, 142, 247, 0.15)"
+                >📋</span
+              >
+              Overview
+            </h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Area</th>
+                  <th>What changed</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>README</td>
+                  <td>
+                    Added "About" section framing the project as AI-assisted
+                    deliberate development, not vibe coding
+                  </td>
+                </tr>
+                <tr>
+                  <td>Search</td>
+                  <td>
+                    Text input in FilterBar; highlights matches in card names
+                    and table Name/Originalname columns; matches
+                    <code>name</code> only (not original_name/notes)
+                  </td>
+                </tr>
+                <tr>
+                  <td>Sorting</td>
+                  <td>
+                    Sort dropdown (Name A–Z / Amount / Unpainted first); state
+                    persisted in URL as <code>sort=</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Cards</td>
+                  <td>
+                    Static badges removed; overlay pills (amount ×N always,
+                    Painted/Unpainted when sorting by painted) on image top-left
+                  </td>
+                </tr>
+                <tr>
+                  <td>Table</td>
+                  <td>
+                    Each-block key fixed; search highlighting in Name and
+                    Original Name columns
+                  </td>
+                </tr>
+                <tr>
+                  <td>Wishlist tab</td>
+                  <td>
+                    Hides painted filter and Amount/Unpainted sort options;
+                    resets those states on tab switch
+                  </td>
+                </tr>
+                <tr>
+                  <td>Tab badges</td>
+                  <td>
+                    Collection shows total miniature count (sum of amounts);
+                    Wishlist shows entry count
+                  </td>
+                </tr>
+                <tr>
+                  <td>FilterBar</td>
+                  <td>
+                    Genre/Faction selects hidden when only one option exists in
+                    current data
+                  </td>
+                </tr>
+                <tr>
+                  <td>Painting Queue</td>
+                  <td>
+                    New section on index: top 10 unpainted entries across all
+                    collections, sorted by amount
+                  </td>
+                </tr>
+                <tr>
+                  <td>Factions</td>
+                  <td>
+                    New section on collection page: per-faction painted progress
+                    bars; hidden when &lt;2 factions
+                  </td>
+                </tr>
+                <tr>
+                  <td>DonutChart</td>
+                  <td>
+                    <code>total</code> prop now optional; wishlist replaced with
+                    solid orange circle (absolute number, no ratio)
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section data-nav="Search &amp; Sort" id="sss-search-sort">
+            <h2>
+              <span class="icon" style="background: rgba(108, 142, 247, 0.15)"
+                >🔍</span
+              >
+              Search &amp; Sort
+            </h2>
+
+            <h3>Search</h3>
+            <p>
+              A <code>searchQuery</code> state was added to
+              <code>[slug]/+page.svelte</code> and passed to
+              <code>FilterBar</code> as a <code>$bindable</code> prop. The input
+              uses <code>type="search"</code> for native browser clear button
+              support. Filtering matches only <code>name</code> — not
+              <code>original_name</code> or <code>notes</code> — to avoid
+              surprising results.
+            </p>
+            <div class="decision">
+              <div class="decision-q">Why name-only search?</div>
+              <div class="decision-a">
+                Matching <code>original_name</code> caused entries like "Vorbote
+                des Verfalls" to appear when searching "ca" (because the
+                original name contained it), with no visual indication of why.
+                Name-only is predictable and the highlights are always visible
+                on the card.
+              </div>
+            </div>
+            <p>
+              Highlighting uses a <code>highlight()</code> helper that
+              HTML-escapes the text, splits on the query with a case-insensitive
+              regex, and wraps matches in <code>&lt;mark&gt;</code> tags with a
+              yellow/dark background. Rendered via <code>{@html}</code> in both
+              <code>MiniatureCard</code> and <code>MiniatureTable</code>.
+            </p>
+
+            <h3>Sorting</h3>
+            <p>
+              A <code>sortBy</code> state (<code
+                >'name' | 'amount' | 'painted'</code
+              >) was added alongside the existing filters. Sorting is applied
+              after filtering inside <code>filteredMiniatures</code>, which was
+              upgraded from <code>$derived</code> to
+              <code>$derived.by()</code> to accommodate both steps. Default is
+              <code>name</code> (omitted from URL). The sort dropdown lives in
+              the right-side toolbar next to the view toggle.
+            </p>
+            <p>
+              Both <code>searchQuery</code> and <code>sortBy</code> persist in
+              the URL (<code>?q=</code> and <code>?sort=</code>) using the
+              existing <code>goto()</code> pattern.
+            </p>
+          </section>
+
+          <section data-nav="Card &amp; Table" id="sss-cards-table">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)"
+                >🃏</span
+              >
+              Card &amp; Table Improvements
+            </h2>
+
+            <h3>Cards — badges removed, overlay pills added</h3>
+            <p>
+              The static Painted / Converted / Special badges were removed from
+              the card body. The card now shows only the miniature name below
+              the image — clean by default.
+            </p>
+            <p>
+              Contextual overlay pills appear on the top-left of the image when
+              relevant:
+            </p>
+            <ul>
+              <li>
+                <strong>×N</strong> (dark translucent,
+                <code>bg-gray-900/70</code>) — always shown (<code
+                  >amount &gt;= 1</code
+                >, including single miniatures)
+              </li>
+              <li>
+                <strong>Painted</strong> (green) /
+                <strong>Unpainted</strong> (red) — shown when
+                <code>sortBy === 'painted'</code>, so you can see status while
+                working through the sort
+              </li>
+            </ul>
+            <p>
+              Props flow: <code>+page.svelte</code> →
+              <code>MiniatureCards</code> → <code>MiniatureCard</code>.
+              <code>showPainted</code> is the only remaining boolean prop;
+              <code>showAmount</code> was removed once amount became always-on.
+            </p>
+            <p>
+              The amount pill uses <code>amount &gt;= 1</code> — it shows on
+              every card including single miniatures, so there is no ambiguity
+              about whether a card represents one or more.
+            </p>
+
+            <h3>Table</h3>
+            <ul>
+              <li>
+                Each-block key fixed from index-based
+                <code>`${i}-${name}`</code> to
+                <code>miniature.original_name || miniature.name</code>
+              </li>
+              <li>
+                <code>searchQuery</code> prop added; the same
+                <code>highlight()</code> helper applied to Name and Originalname
+                columns (both visible in table view)
+              </li>
+            </ul>
+          </section>
+
+          <section data-nav="Wishlist Tab UX" id="sss-wishlist">
+            <h2>
+              <span class="icon" style="background: rgba(251, 191, 36, 0.15)"
+                >📋</span
+              >
+              Wishlist Tab UX
+            </h2>
+            <p>
+              Several controls are irrelevant on the wishlist tab — wished
+              entries have no painted status and amount is always zero:
+            </p>
+            <ul>
+              <li>
+                <strong>Painted only</strong> checkbox — hidden via
+                <code>showPaintedFilter</code> prop on <code>FilterBar</code>
+              </li>
+              <li>
+                <strong>Amount</strong> and
+                <strong>Unpainted first</strong> sort options — conditionally
+                rendered only when <code>!isWishlist</code>
+              </li>
+            </ul>
+            <p>
+              When switching to the wishlist tab, a
+              <code>switchToWishlist()</code> function resets
+              <code>paintedOnly = false</code> and snaps
+              <code>sortBy</code> back to <code>'name'</code> if it was set to
+              <code>'painted'</code> or <code>'amount'</code>. This avoids stale
+              state carrying over.
+            </p>
+
+            <h3>Tab badges</h3>
+            <p>The badge format was iterated on:</p>
+            <ul>
+              <li>
+                <strong>Collection</strong> shows the total miniature count (sum
+                of <code>amount</code> fields) — the real collection size
+              </li>
+              <li>
+                <strong>Wishlist</strong> shows the entry count — the number of
+                items on the list
+              </li>
+            </ul>
+            <p>
+              Wished entries have amount=0 so summing amounts for the wishlist
+              would always show 0. Entry count is the meaningful metric there.
+            </p>
+
+            <h3>FilterBar — hiding single-option selects</h3>
+            <p>
+              Genre select is hidden when all miniatures in the current tab
+              share the same genre. Faction select is hidden when fewer than two
+              distinct factions exist. Both checks are reactive — filtering by
+              genre can collapse factions to one, at which point the faction
+              select disappears automatically.
+            </p>
+          </section>
+
+          <section data-nav="Stats" id="sss-stats">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >📊</span
+              >
+              Stats: Painting Queue &amp; Factions
+            </h2>
+
+            <h3>Painting Queue (index page)</h3>
+            <p>
+              A new card between the stats donuts and the collections grid shows
+              the top 10 unpainted owned entries across all collections, ranked
+              by amount descending. Each row links to the collection page with
+              <code>?sort=painted</code> applied, so clicking goes directly to
+              the painting-first view.
+            </p>
+            <p>
+              Computed client-side by flatMapping all pages' miniatures,
+              filtering for
+              <code>!wished &amp;&amp; !painted &amp;&amp; amount &gt; 0</code>,
+              sorting by amount desc, and slicing to 10.
+            </p>
+
+            <h3>Factions (collection page)</h3>
+            <p>
+              A compact card appears between the paint progress bar and the tab
+              nav on each collection page. For each faction, it shows: name, a
+              thin green progress bar, and <code>painted/owned · %</code>.
+            </p>
+            <p>
+              Hidden when fewer than 2 factions exist in the collection. A
+              miniature's active factions are taken from
+              <code>faction_fantasy</code> or <code>faction_scifi</code> based
+              on its <code>genre</code> field. Entries with no faction are
+              grouped under <code>–</code>.
+            </p>
+
+            <h3>DonutChart — wishlist redesign</h3>
+            <p>
+              The wishlist donut showed a ratio ("X of Y") which made no sense
+              for an absolute count. The <code>total</code> prop on
+              <code>DonutChart</code> was made optional:
+            </p>
+            <ul>
+              <li>
+                When <code>total</code> is provided: renders as before (arc +
+                "of N" label, value text at y=47)
+              </li>
+              <li>
+                When <code>total</code> is absent: no arc rendered, value text
+                centered at y=57
+              </li>
+            </ul>
+            <p>
+              The wishlist was then replaced entirely with a solid amber circle
+              (<code>rounded-full bg-amber-400</code>, dark amber text for
+              contrast) — an absolute count badge, not a ratio. Donut order
+              changed to: Painted → Fantasy/Sci-Fi → Wishlist.
+            </p>
+          </section>
+
+          <section data-nav="Next Steps" id="sss-next">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >🔮</span
+              >
+              Next Steps
+            </h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Task</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>High</td>
+                  <td>
+                    <strong>Mobile UX check</strong> — verify filter bar, table
+                    view, image modal, and faction breakdown on small screens.
+                    Not yet tested on mobile.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Medium</td>
+                  <td>
+                    <strong>Date tracking</strong> — add a
+                    <code>painted_on</code> date field to the Kirby miniatures
+                    structure. Enables a painting timeline ("X minis painted in
+                    2025") and more meaningful stats over time.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Low</td>
+                  <td>
+                    <strong>Deployment automation</strong> — GitHub Actions →
+                    FTP on push, so Kirby panel saves reach the live site
+                    automatically. Intentionally saved for last.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>Ideas discussed but deferred</h3>
+            <ul>
+              <li>
+                <strong>Frontend editing</strong> — editing content from the
+                live SvelteKit UI was explored. Conclusion: Kirby panel stays
+                for image management; a JSON-based editing layer would require a
+                PHP write endpoint and wouldn't solve the rebuild/deploy problem
+                without automation anyway.
+              </li>
+              <li>
+                <strong>Painting timeline</strong> — depends on date tracking
+                being added first.
+              </li>
+            </ul>
+          </section>
+
+          <section data-nav="Docs: Topic Index" id="sss-docs-index">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)"
+                >📋</span
+              >
+              Docs: Topic Index Added
+            </h2>
+            <p>
+              A persistent <strong>Topic Reference</strong> index panel was
+              added to <code>docs/index.html</code> — accessible via the sidebar
+              at any time. It provides a quick lookup table across all session
+              logs, grouped by topic area (Architecture, Data &amp; API,
+              Frontend, Stats &amp; UI, Config &amp; Ops). Each row links
+              directly to the relevant section and switches to the correct
+              session panel automatically.
+            </p>
+            <p>
+              Convention established: the index is updated at the end of every
+              documentation session alongside the session panel itself.
+            </p>
+          </section>
+
+          <section
+            data-nav="Config &amp; Gitignore Cleanup"
+            id="sss-config-cleanup"
+          >
+            <h2>
+              <span class="icon" style="background: rgba(251, 191, 36, 0.15)"
+                >⚙️</span
+              >
+              Config &amp; Gitignore Cleanup
+            </h2>
+            <p>
+              A follow-up session on the same day removed leftover POSSE
+              syndication config, stripped dead commented-out code from Kirby
+              config files, deleted a stale Herd environment file, and updated
+              <code>.gitignore</code> to reflect the headless architecture.
+            </p>
+
+            <h3>Files changed</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>File</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>site/config/posse.yml</code></td>
+                  <td>
+                    Deleted — POSSE syndication config (Mastodon + Bluesky
+                    tokens). Tokens were gitignored; no social publishing
+                    planned.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>site/config/panel.php</code></td>
+                  <td>
+                    Stripped 3 commented-out lines; only
+                    <code>'language' =&gt; 'de'</code> was active.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>site/config/routes.php</code></td>
+                  <td>
+                    Deleted — 100% commented out.
+                    <code>require_once</code> removed from
+                    <code>config.php</code>.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>site/config/thumbs.php</code></td>
+                  <td>
+                    Deleted — 100% commented out.
+                    <code>require_once</code> removed from
+                    <code>config.php</code>.
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <code
+                      >site/config/config.hobbylog.hendrik-berends.de.test.php</code
+                    >
+                  </td>
+                  <td>
+                    Deleted — Herd <code>.test</code> env, never loaded with
+                    built-in PHP server. <code>thumbs.driver = gd</code> moved
+                    to <code>config.localhost.php</code>.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>.gitignore</code></td>
+                  <td>
+                    Added exceptions for all tracked config files; added
+                    SvelteKit section; broadened <code>/.env</code> to
+                    <code>**/.env</code>.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3>.gitignore — config exceptions added</h3>
+            <p>
+              The <code>/site/config/*</code> rule only whitelisted
+              <code>config.php</code>; the other environment configs were
+              silently excluded from git. Fixed:
+            </p>
+            <pre><code>/site/config/*
+<span class="n">!/site/config/config.php</span>
+<span class="s">!/site/config/config.localhost.php</span>
+<span class="s">!/site/config/config.hobbylog.hendrik-berends.de.php</span>
+<span class="s">!/site/config/panel.php</span>
+<span class="s">!/site/config/private.php</span></code></pre>
+
+            <h3>.gitignore — SvelteKit section added</h3>
+            <pre><code><span class="c"># SvelteKit</span>
+<span class="n">frontend/.svelte-kit/</span>   <span class="c">// build cache</span>
+<span class="n">frontend/build/</span>         <span class="c">// static output — deployed via FTP, not git</span></code></pre>
+          </section>
+
+          <footer>
+            <p>
+              Generated by Claude Code (claude-sonnet-4-6) · Session date:
+              2026-03-06
+            </p>
+          </footer>
+        </div>
+        <!-- /session-march-06-ui -->
+      </main>
+    </div>
+
+    <script>
+      const sessions = [
+        "march-07",
+        "march-06-ui",
+        "march-05",
+        "blueprints-kql",
+        "march-03",
+        "index",
+      ];
+
+      function activateSession(id) {
+        if (!sessions.includes(id)) id = sessions[0];
+
+        // Swap panels
+        sessions.forEach((s) => {
+          document
+            .getElementById("session-" + s)
+            .classList.toggle("active", s === id);
+        });
+
+        // Update sidebar session buttons
+        document.querySelectorAll(".session-btn").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.session === id);
+        });
+
+        // Rebuild section links from active panel's data-nav sections
+        const panel = document.getElementById("session-" + id);
+        const ul = document.getElementById("section-links");
+        ul.innerHTML = "";
+        panel.querySelectorAll("section[data-nav]").forEach((section) => {
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = "#" + section.id;
+          a.innerHTML = section.dataset.nav;
+          li.appendChild(a);
+          ul.appendChild(li);
+        });
+
+        history.replaceState(null, "", "#" + id);
+      }
+
+      // Wire up session buttons
+      document.querySelectorAll(".session-btn").forEach((btn) => {
+        btn.addEventListener("click", () =>
+          activateSession(btn.dataset.session),
+        );
+      });
+
+      // Init from URL hash or default to first session
+      const hash = location.hash.slice(1);
+      activateSession(sessions.includes(hash) ? hash : sessions[0]);
+    </script>
+  </body>
+</html>

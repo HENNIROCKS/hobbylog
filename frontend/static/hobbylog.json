@@ -1,0 +1,19 @@
+{
+  "Factions": [
+    {
+      "name": "Madensippe des Nurgle",
+      "subfactions": [
+        { "name": "Die Erbrochenen" },
+        { "name": "Väterchens Gärtner" }
+      ]
+    },
+    {
+      "name": "Skaven",
+      "subfactions": [{ "name": "Zwistklaues Schwarm" }]
+    },
+    {
+      "name": "Sklaven der Finsternis",
+      "subfactions": [{ "name": "Eisengolems" }, { "name": "Finsterschwur" }]
+    }
+  ]
+}
