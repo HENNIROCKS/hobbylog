@@ -3,7 +3,7 @@ import type { CollectionPage } from './types';
 
 const MINIATURE_SELECT = {
 	name: true,
-	original_name: true,
+	name_german: true,
 	genre: true,
 	faction_fantasy: 'structureItem.faction_fantasy.split',
 	faction_scifi: 'structureItem.faction_scifi.split',

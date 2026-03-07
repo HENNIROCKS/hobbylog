@@ -39,7 +39,7 @@ export const t = {
 	table: 'Table',
 
 	// Table columns
-	originalName: 'Original Name',
+	originalName: 'German Name',
 	amount: 'Amount',
 	images: 'Images',
 	paintedOn: 'Painted on',

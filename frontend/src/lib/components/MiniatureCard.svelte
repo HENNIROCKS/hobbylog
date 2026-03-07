@@ -49,7 +49,7 @@
 		{#if thumb}
 			<img
 				src={thumb}
-				alt={miniature.original_name || miniature.name}
+				alt={miniature.name_german || miniature.name}
 				class="h-full w-full object-cover transition-all"
 				class:grayscale={!miniature.painted}
 			/>
@@ -99,6 +99,6 @@
 <ImageModal
 	images={miniature.images}
 	name={miniature.name}
-	originalName={miniature.original_name}
+	originalName={miniature.name_german}
 	bind:open={modalOpen}
 />

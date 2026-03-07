@@ -5,7 +5,7 @@ export interface MiniatureImage {
 
 export interface Miniature {
 	name: string;
-	original_name: string;
+	name_german: string;
 	genre: 'fantasy' | 'scifi' | '';
 	faction_fantasy: string[];
 	faction_scifi: string[];

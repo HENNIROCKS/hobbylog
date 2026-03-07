@@ -56,13 +56,13 @@
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-gray-100 bg-white dark:divide-gray-700 dark:bg-gray-800">
-				{#each miniatures as miniature (miniature.original_name || miniature.name)}
+				{#each miniatures as miniature (miniature.name_german || miniature.name)}
 					<tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
 						<td class="px-4 py-2 font-medium text-gray-900 dark:text-white">
 							{@html highlight(miniature.name, searchQuery)}
 						</td>
 						<td class="hidden px-4 py-2 text-gray-500 dark:text-gray-400 sm:table-cell">
-							{@html highlight(miniature.original_name, searchQuery)}
+							{@html highlight(miniature.name_german, searchQuery)}
 						</td>
 						<td class="px-4 py-2 text-right text-gray-700 dark:text-gray-300">{miniature.amount}</td>
 						<td class="hidden px-4 py-2 text-gray-500 dark:text-gray-400 sm:table-cell">
@@ -92,7 +92,7 @@
 	<ImageModal
 		images={activeMiniature.images}
 		name={activeMiniature.name}
-		originalName={activeMiniature.original_name}
+		originalName={activeMiniature.name_german}
 		bind:open={modalOpen}
 	/>
 {/if}

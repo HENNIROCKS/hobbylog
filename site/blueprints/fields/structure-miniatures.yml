@@ -11,12 +11,12 @@ columns:
 
 fields:
   name:
-    label: Name (EN)
+    label: Name
     type: text
     width: 1/2
 
-  original_name:
-    label: Original Name
+  name_german:
+    label: German Name
     type: text
     width: 1/2
 
@@ -40,18 +40,8 @@ fields:
     type: text
     width: 1/4
 
-  categories_fantasy:
-    label: Category (Fantasy)
-    type: text
-    width: 1/4
-
   faction_scifi:
     label: Faction (Sci-Fi)
-    type: text
-    width: 1/4
-
-  categories_scifi:
-    label: Category (Sci-Fi)
     type: text
     width: 1/4
 
