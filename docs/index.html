@@ -811,6 +811,16 @@
                   </td>
                   <td>Blueprints &amp; KQL · Mar 04</td>
                 </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#m07-date-tracking"
+                      onclick="activateSession('march-07')"
+                      ><code>painted_on</code> date field</a
+                    >
+                  </td>
+                  <td>i18n &amp; Planning · Mar 07</td>
+                </tr>
               </tbody>
             </table>
           </section>
@@ -1032,6 +1042,26 @@
                   </td>
                   <td>English Migration · Mar 07</td>
                 </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#m07-docs-cleanup"
+                      onclick="activateSession('march-07')"
+                      >CLAUDE.md housekeeping (architecture sync)</a
+                    >
+                  </td>
+                  <td>i18n &amp; Planning · Mar 07</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#m07-deploy"
+                      onclick="activateSession('march-07')"
+                      >Deployment automation (GitHub Actions + Kirby webhook)</a
+                    >
+                  </td>
+                  <td>i18n &amp; Planning · Mar 07</td>
+                </tr>
               </tbody>
             </table>
           </section>
@@ -1118,8 +1148,10 @@
             <p>
               Full English migration across blueprints, frontend, config, and
               docs; i18n translation object; panel layout improvements;
-              alphabetical sorting; mobile UX audit and fixes; and a follow-up
-              project plan for a native mobile app.
+              alphabetical sorting; mobile UX audit and fixes; a follow-up
+              project plan for a native mobile app; docs and CLAUDE.md
+              housekeeping; <code>painted_on</code> date field; and deployment
+              automation groundwork (GitHub Actions + Kirby webhook).
             </p>
           </div>
 
@@ -1602,6 +1634,210 @@
               <li>Auth flow — app logs in as a Kirby user</li>
               <li>Image upload: camera → Kirby media library</li>
               <li>PWA first as a stepping stone before native packaging</li>
+            </ul>
+          </section>
+
+          <section data-nav="Docs &amp; CLAUDE.md Cleanup" id="m07-docs-cleanup">
+            <h2>
+              <span class="icon" style="background: rgba(251, 191, 36, 0.15)"
+                >🧹</span
+              >
+              Docs &amp; CLAUDE.md Cleanup
+            </h2>
+            <h3>Provider name removed</h3>
+            <p>
+              All references to the hosting provider name were replaced with the
+              actual constraint that drives architectural decisions:
+              <strong>shared PHP hosting — no SSH, no Node.js runtime</strong>.
+              Affects <code>CLAUDE.md</code>, <code>README.md</code>, and four
+              spots in <code>docs/index.html</code>.
+            </p>
+            <h3>CLAUDE.md rewritten for current architecture</h3>
+            <p>
+              Several sections had become inaccurate after the headless
+              migration. Changes:
+            </p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Section</th>
+                  <th>Before</th>
+                  <th>After</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Styling</td>
+                  <td>"SCSS (active), Tailwind migration planned"</td>
+                  <td>"Tailwind CSS v4 (SvelteKit frontend)"</td>
+                </tr>
+                <tr>
+                  <td>Commands</td>
+                  <td>SCSS <code>watch-styles</code> / <code>build-styles</code> (plugin gone)</td>
+                  <td><code>make backend</code> / <code>make frontend</code></td>
+                </tr>
+                <tr>
+                  <td>Plugin Structure</td>
+                  <td>Described <code>hb-commons</code> and <code>hb-theme-hobbylog</code></td>
+                  <td>"Only active plugin: <code>kql</code>"</td>
+                </tr>
+                <tr>
+                  <td><code>__</code> Prefix Convention</td>
+                  <td>Full section listing disabled plugin dirs</td>
+                  <td>Removed entirely — no <code>__</code> files remain</td>
+                </tr>
+                <tr>
+                  <td>Configuration</td>
+                  <td>Referenced <code>routes.php</code>, <code>thumbs.php</code>, <code>__hobbylog.json</code></td>
+                  <td>Reflects actual <code>config.php</code> (panel.php + private.php only)</td>
+                </tr>
+                <tr>
+                  <td>Kirby Concepts</td>
+                  <td>Templates, snippets, controllers, collections</td>
+                  <td>Blueprints and models only (headless — no rendering in Kirby)</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section data-nav="Date Tracking" id="m07-date-tracking">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)"
+                >📅</span
+              >
+              Date Tracking (<code>painted_on</code>)
+            </h2>
+            <p>
+              A <code>painted_on</code> date field was added to the miniatures
+              structure. The goal: accumulate data now so a painting timeline
+              ("X minis painted in 2025") becomes possible in a future session.
+            </p>
+            <h3>Files changed</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>File</th>
+                  <th>Change</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>site/blueprints/fields/structure-miniatures.yml</code></td>
+                  <td>New <code>painted_on</code> date field (<code>type: date</code>, <code>width: 1/4</code>) after the <code>painted</code> toggle</td>
+                </tr>
+                <tr>
+                  <td><code>frontend/src/lib/types.ts</code></td>
+                  <td><code>painted_on: string</code> added to <code>Miniature</code> interface</td>
+                </tr>
+                <tr>
+                  <td><code>frontend/src/lib/api.ts</code></td>
+                  <td><code>painted_on: true</code> added to <code>MINIATURE_SELECT</code></td>
+                </tr>
+                <tr>
+                  <td><code>frontend/src/lib/i18n.ts</code></td>
+                  <td><code>paintedOn: 'Painted on'</code> added to <code>t</code></td>
+                </tr>
+                <tr>
+                  <td><code>frontend/src/lib/components/MiniatureTable.svelte</code></td>
+                  <td>"Painted on" column added (<code>hidden sm:table-cell</code>), shows date or "—"</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="decision">
+              <div class="decision-q">Why not show the date on cards too?</div>
+              <div class="decision-a">
+                Cards are compact — a date badge would clutter the layout for
+                limited gain. The table view is the right place for structured
+                metadata. The painting timeline (future) will be its own
+                dedicated UI.
+              </div>
+            </div>
+          </section>
+
+          <section data-nav="Deployment Automation" id="m07-deploy">
+            <h2>
+              <span class="icon" style="background: rgba(251, 191, 36, 0.15)"
+                >🚀</span
+              >
+              Deployment Automation
+            </h2>
+            <p>
+              Work in progress on branch
+              <code>feat/deployment-automation</code>. The constraint: shared
+              PHP hosting with no SSH and no Node.js runtime means the build
+              must happen in CI and the output must be FTP'd.
+            </p>
+            <div class="decision">
+              <div class="decision-q">
+                Scheduled build or webhook-triggered?
+              </div>
+              <div class="decision-a">
+                Webhook-triggered. Content updates will be more frequent than
+                code changes, so a scheduled build would mean waiting hours to
+                see panel saves go live. The webhook fires immediately on save.
+              </div>
+            </div>
+            <h3>GitHub Actions workflow (<code>.github/workflows/deploy.yml</code>)</h3>
+            <p>
+              Triggers on <code>push</code> to main and
+              <code>workflow_dispatch</code>. Steps: checkout → Node 20 → <code>npm ci</code> → <code>vite build</code>
+              (pointing at production Kirby URL) →
+              <code>SamKirkland/FTP-Deploy-Action</code> uploads
+              <code>frontend/build/</code> to the server webroot.
+            </p>
+            <h3>Required GitHub Actions secrets</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Secret</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>KIRBY_URL</code></td>
+                  <td>Production Kirby domain (used by Vite during prerender)</td>
+                </tr>
+                <tr>
+                  <td><code>FTP_SERVER</code></td>
+                  <td>FTP hostname</td>
+                </tr>
+                <tr>
+                  <td><code>FTP_USERNAME</code></td>
+                  <td>FTP username</td>
+                </tr>
+                <tr>
+                  <td><code>FTP_PASSWORD</code></td>
+                  <td>FTP password</td>
+                </tr>
+                <tr>
+                  <td><code>FTP_SERVER_DIR</code></td>
+                  <td>Remote path (e.g. <code>/www/hobbylog.hendrik-berends.de/</code>)</td>
+                </tr>
+              </tbody>
+            </table>
+            <h3>Kirby webhook hooks (<code>site/config/config.php</code>)</h3>
+            <p>
+              Three hooks fire on content change:
+              <code>page.update:after</code>, <code>page.create:after</code>,
+              <code>page.delete:after</code>. Each calls
+              <code>triggerDeployment()</code>, which POSTs to the GitHub API
+              <code>workflow_dispatch</code> endpoint. A no-op if
+              <code>deploy.php</code> is absent — local dev is unaffected.
+            </p>
+            <h3>Server-side credential file</h3>
+            <p>
+              <code>site/config/deploy.php</code> (gitignored, server-only)
+              holds the GitHub PAT (<code>workflow</code> scope) and repo name.
+              <code>site/config/deploy.example.php</code> is committed as a
+              template.
+            </p>
+            <h3>Next steps to activate</h3>
+            <ul>
+              <li>Create the 5 GitHub Actions secrets in repo settings</li>
+              <li>Generate a GitHub PAT with <code>workflow</code> scope</li>
+              <li>Upload <code>deploy.php</code> to <code>site/config/</code> on the server</li>
+              <li>Merge branch and push — first run validates the pipeline</li>
             </ul>
           </section>
 
