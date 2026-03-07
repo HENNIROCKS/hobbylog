@@ -21,7 +21,7 @@ A running log of sessions, decisions, and design rationale lives in [`docs/`](do
 | Backend | Kirby CMS v5 (PHP 8.2+) | Content management, KQL API |
 | Frontend | SvelteKit + Svelte 5 | Static site, UI |
 | Styling | Tailwind CSS v4 | Utility classes |
-| Deployment | adapter-static + FTP | ALL-INKL shared hosting |
+| Deployment | adapter-static + FTP | Shared PHP hosting (no SSH/Node runtime) |
 
 ---
 
@@ -184,4 +184,4 @@ npm run build-styles   # one-time build
 
 Static build output goes to `frontend/build/`. Upload via FTP (VS Code SFTP extension, config in `.vscode/sftp.json`).
 
-The Kirby backend (PHP files + content) is deployed separately to ALL-INKL. `kirby/`, `vendor/`, `content/`, `site/accounts/`, and `site/cache/` are all gitignored.
+The Kirby backend (PHP files + content) is deployed separately to the server. `kirby/`, `vendor/`, `content/`, `site/accounts/`, and `site/cache/` are all gitignored.

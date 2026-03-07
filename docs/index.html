@@ -2079,7 +2079,7 @@ htmlhead()-&gt;recommended_minimum()-&gt;title(...)
                 <div class="card-icon">📦</div>
                 <div class="card-title">Static deploy</div>
                 <p>
-                  ALL-INKL shared hosting doesn't run Node.js. SvelteKit uses
+                  The server has no Node.js runtime. SvelteKit uses
                   adapter-static and the output is FTP'd.
                 </p>
               </div>
@@ -2534,9 +2534,8 @@ htmlhead()-&gt;recommended_minimum()-&gt;title(...)
                 Why adapter-static and not adapter-node?
               </div>
               <div class="decision-a">
-                ALL-INKL shared hosting provides PHP but no Node.js runtime. The
-                static output can be uploaded via FTP like any other HTML/CSS/JS
-                site.
+                The host provides PHP but no Node.js runtime. The static output
+                can be uploaded via FTP like any other HTML/CSS/JS site.
               </div>
             </div>
             <div class="decision">
@@ -2646,7 +2645,7 @@ cd frontend
             <h3>Production build</h3>
             <pre><code>cd frontend
 /opt/homebrew/bin/node node_modules/.bin/vite build
-<span class="c"># → frontend/build/  (upload via FTP to ALL-INKL)</span></code></pre>
+<span class="c"># → frontend/build/  (upload via FTP to the server)</span></code></pre>
           </section>
 
           <section id="headless-nextsteps" data-nav="Next Steps">
@@ -3811,7 +3810,7 @@ make frontend   # vite dev → SvelteKit on localhost:5173</code></pre>
                 <code>http://localhost:8000</code> for local dev;
                 <code>frontend/.env.production</code> is empty so the production
                 build uses a relative path (<code>/api/query</code>) — correct
-                for same-origin hosting on ALL-INKL.
+                for same-origin hosting.
               </li>
               <li>
                 <strong>KQL auth in production</strong> —
