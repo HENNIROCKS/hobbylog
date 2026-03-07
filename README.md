@@ -90,8 +90,10 @@ cd frontend
 │   │   ├── app.css            # Tailwind CSS entry
 │   │   ├── lib/
 │   │   │   ├── api.ts         # KQL fetch helpers (fetchPages, fetchPage)
+│   │   │   ├── i18n.ts        # Localisation helpers
 │   │   │   ├── types.ts       # TypeScript interfaces
 │   │   │   └── components/
+│   │   │       ├── DonutChart.svelte
 │   │   │       ├── FilterBar.svelte
 │   │   │       ├── ImageModal.svelte
 │   │   │       ├── MiniatureCard.svelte
@@ -110,11 +112,15 @@ cd frontend
 │   └── vite.config.ts         # Tailwind Vite plugin
 ├── kirby/                     # Kirby core (gitignored)
 ├── site/
+│   ├── blueprints/            # Kirby blueprints (pages/, fields/, sections/)
 │   ├── config/
-│   │   └── config.php         # KQL auth, CORS, locale, plugins
+│   │   ├── config.php         # KQL auth, CORS, locale
+│   │   ├── config.localhost.php          # Local overrides (frontend URL)
+│   │   ├── config.hobbylog.hendrik-berends.de.php  # Production overrides
+│   │   └── private.php        # Protected routes
+│   ├── models/                # Page models (DefaultPage, HomePage)
 │   └── plugins/
-│       ├── hb-commons/        # Shared helpers (mapFiles, mapRequires), head snippet
-│       └── hb-theme-hobbylog/ # Main theme (blueprints, snippets, templates, SCSS)
+│       └── kql/               # Kirby Query Language API plugin
 └── vendor/                    # Composer packages (gitignored)
 ```
 
@@ -166,17 +172,9 @@ Each content page has a `miniatures` structure field with these per-miniature fi
 
 ---
 
-## Kirby Panel & SCSS
+## Kirby Panel
 
-All blueprints, snippets, and templates live in `site/plugins/hb-theme-hobbylog/` (not in top-level `site/` directories). Content can be managed and previewed via the Kirby panel at any time.
-
-To compile the theme SCSS:
-
-```bash
-cd site/plugins/hb-theme-hobbylog
-npm run watch-styles   # watch
-npm run build-styles   # one-time build
-```
+Blueprints live in `site/blueprints/` (native Kirby location). Content can be managed and previewed via the Kirby panel at any time (`http://localhost:8000/panel`).
 
 ---
 
