@@ -623,7 +623,7 @@
           <li>
             <button class="session-btn" data-session="march-07">
               <span class="session-date">2026-03-07</span>
-              <span class="session-title">i18n, Mobile UX &amp; Planning</span>
+              <span class="session-title">i18n, Field Rename &amp; Mobile UX</span>
             </button>
           </li>
           <li>
@@ -820,6 +820,16 @@
                     >
                   </td>
                   <td>i18n &amp; Planning · Mar 07</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#m07-field-rename"
+                      onclick="activateSession('march-07')"
+                      >Field rename: <code>name</code> / <code>name_german</code></a
+                    >
+                  </td>
+                  <td>Field Rename · Mar 07</td>
                 </tr>
               </tbody>
             </table>
@@ -1099,6 +1109,16 @@
                   </td>
                   <td>English Migration · Mar 07</td>
                 </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="#m07-string-cleanup"
+                      onclick="activateSession('march-07')"
+                      >German string sweep (labels, components)</a
+                    >
+                  </td>
+                  <td>Field Rename · Mar 07</td>
+                </tr>
               </tbody>
             </table>
           </section>
@@ -1144,14 +1164,18 @@
               <span class="badge badge-purple">Claude Code</span>
               <span class="badge badge-amber">Session Log</span>
             </div>
-            <h1>i18n Foundation, Mobile UX &amp; Planning</h1>
+            <h1>i18n, Field Rename &amp; Mobile UX</h1>
             <p>
               Full English migration across blueprints, frontend, config, and
               docs; i18n translation object; panel layout improvements;
               alphabetical sorting; mobile UX audit and fixes; a follow-up
               project plan for a native mobile app; docs and CLAUDE.md
-              housekeeping; <code>painted_on</code> date field; and deployment
-              automation groundwork (GitHub Actions + Kirby webhook).
+              housekeeping; <code>painted_on</code> date field; deployment
+              automation groundwork (GitHub Actions + Kirby webhook);
+              miniature field rename (<code>name</code> → <code>name_german</code>,
+              <code>original_name</code> → <code>name</code>) across 29 content files,
+              blueprint, types, API, and components; German label/string cleanup;
+              and faction field redesign exploration (reverted).
             </p>
           </div>
 
@@ -1839,6 +1863,142 @@
               <li>Upload <code>deploy.php</code> to <code>site/config/</code> on the server</li>
               <li>Merge branch and push — first run validates the pipeline</li>
             </ul>
+          </section>
+
+          <section data-nav="Field Rename" id="m07-field-rename">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)">🔄</span>
+              Field Rename: <code>name</code> / <code>name_german</code>
+            </h2>
+            <p>
+              With the site now fully in English, <code>original_name</code> (the English
+              name) effectively became the primary field, making <code>name</code> the
+              odd one out. The fields were renamed to reflect reality:
+            </p>
+            <table>
+              <thead><tr><th>Before</th><th>After</th><th>Meaning</th></tr></thead>
+              <tbody>
+                <tr><td><code>name</code></td><td><code>name_german</code></td><td>German name of the miniature</td></tr>
+                <tr><td><code>original_name</code></td><td><code>name</code></td><td>English (canonical) name</td></tr>
+              </tbody>
+            </table>
+            <div class="callout">
+              <p><strong>Safe rename order:</strong> <code>original_name</code> → <code>name</code> was done
+              <em>after</em> <code>name</code> → <code>name_german</code> to avoid the substring
+              <code>name</code> inside <code>original_name</code> being double-matched by a naive find-replace.</p>
+            </div>
+            <h3>Files changed</h3>
+            <table>
+              <thead><tr><th>File / Layer</th><th>Change</th></tr></thead>
+              <tbody>
+                <tr><td>29 × <code>content/**/default.txt</code></td><td>Bulk <code>perl -pi</code> rename in both field keys</td></tr>
+                <tr><td><code>structure-miniatures.yml</code></td><td>Field key + label updated; <code>original_name</code> field replaced by <code>name_german</code></td></tr>
+                <tr><td><code>frontend/src/lib/types.ts</code></td><td><code>original_name: string</code> → <code>name_german: string</code></td></tr>
+                <tr><td><code>frontend/src/lib/api.ts</code></td><td><code>original_name: true</code> → <code>name_german: true</code> in <code>MINIATURE_SELECT</code></td></tr>
+                <tr><td><code>MiniatureTable.svelte</code></td><td>Row key, displayed column, modal prop updated</td></tr>
+                <tr><td><code>MiniatureCard.svelte</code></td><td><code>alt</code> attribute and modal prop updated</td></tr>
+                <tr><td><code>MiniatureCards.svelte</code></td><td>Each-block key updated</td></tr>
+              </tbody>
+            </table>
+            <p>
+              The frontend's sort and search logic already used <code>name</code> —
+              no changes needed there; it now correctly sorts/searches by the English name.
+            </p>
+          </section>
+
+          <section data-nav="German String Cleanup" id="m07-string-cleanup">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)">🧹</span>
+              German String &amp; Label Cleanup
+            </h2>
+            <p>
+              A sweep of all frontend Svelte files and blueprints for remaining
+              German strings, on top of the earlier full i18n migration.
+            </p>
+            <table>
+              <thead><tr><th>Location</th><th>Before</th><th>After</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><code>PaintProgress.svelte</code></td>
+                  <td><code>Bemalfortschritt</code></td>
+                  <td><code>Paint Progress</code></td>
+                </tr>
+                <tr>
+                  <td><code>structure-miniatures.yml</code> column</td>
+                  <td><code>name:</code> (label "Name (EN)")</td>
+                  <td>label → <code>Name</code></td>
+                </tr>
+                <tr>
+                  <td><code>structure-miniatures.yml</code> field</td>
+                  <td><code>original_name</code> label "Original Name"</td>
+                  <td><code>name_german</code> label "German Name"</td>
+                </tr>
+                <tr>
+                  <td><code>frontend/src/lib/i18n.ts</code></td>
+                  <td><code>originalName: 'Original Name'</code></td>
+                  <td><code>originalName: 'German Name'</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section data-nav="Faction Field Exploration" id="m07-faction-explore">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)">🔮</span>
+              Faction Field Redesign (Explored &amp; Reverted)
+            </h2>
+            <p>
+              The four faction/category text fields (<code>faction_fantasy</code>,
+              <code>categories_fantasy</code>, <code>faction_scifi</code>,
+              <code>categories_scifi</code>) were identified as over-engineered.
+              A redesign was explored but ultimately reverted to keep things clean.
+            </p>
+            <h3>What was tried</h3>
+            <div class="timeline">
+              <div class="phase">
+                <div class="phase-title">Phase 1 — Multiselect with managed options</div>
+                <p>
+                  Added a <strong>Factions tab</strong> to <code>site/blueprints/site.yml</code>
+                  (converting from columns to tabs layout) with two structure fields
+                  (<code>fantasy_factions</code>, <code>scifi_factions</code>), each entry
+                  having <code>name</code> + <code>name_german</code>. The faction fields
+                  in the miniature blueprint were changed to <code>multiselect</code>
+                  querying from <code>site.fantasy_factions.toStructure</code>.
+                </p>
+              </div>
+              <div class="phase">
+                <div class="phase-title">Phase 2 — Nested grouping exploration</div>
+                <p>
+                  Explored adding a subcategory level (e.g. Skaven → Clans Moulder).
+                  Kirby doesn't support nested structures. Checked the multiselect docs —
+                  grouped options are possible statically but not via dynamic query.
+                  Panel areas (<code>getkirby.com/docs/reference/plugins/extensions/panel-areas</code>)
+                  were considered but require a custom plugin with Vue components — too
+                  complex given the no-custom-plugins stance. Conditional fields were also
+                  discussed but would require a separate field per top-level faction.
+                </p>
+              </div>
+              <div class="phase">
+                <div class="phase-title">Phase 3 — Reverted</div>
+                <p>
+                  The redesign was incomplete and the right approach unclear. Both
+                  <code>site.yml</code> and <code>structure-miniatures.yml</code>
+                  were reverted to their pre-exploration state. Categories
+                  (<code>categories_fantasy</code>, <code>categories_scifi</code>)
+                  are confirmed unused in the frontend but cleanup is also deferred.
+                </p>
+              </div>
+            </div>
+            <div class="decision">
+              <div class="decision-q">What to revisit next time?</div>
+              <div class="decision-a">
+                The core need is grouping factions (e.g. Skaven as a parent of its clans)
+                with panel-managed options. Options to evaluate: flat structure with a
+                <code>group</code> field + formatted <code>text</code> template in the
+                multiselect; or a select for top-level faction + multiselect for subfactions
+                (with a fixed, small set of top-level factions making the static approach viable).
+              </div>
+            </div>
           </section>
 
           <footer>
