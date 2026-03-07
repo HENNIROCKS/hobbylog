@@ -28,6 +28,7 @@ kirby
 /site/config/*
 !/site/config/config.php
 !/site/config/config.localhost.php
+!/site/config/deploy.example.php
 
 # Lock files
 # ----------------------------------
