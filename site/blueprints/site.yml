@@ -8,13 +8,26 @@ columns:
         type: pages
         label: Collections
         sortBy: title asc
+        create: false
         query: site.children.listed
 
   sidebar:
     width: 1/3
     sections:
+      unlisted:
+        type: pages
+        label: Unlisted
+        sortBy: title asc
+        create: false
+        query: site.children.unlisted.filterBy("slug", "!=", "home").filterBy("slug", "!=", "error")
+
+      drafts:
+        type: pages
+        label: Drafts
+        query: site.drafts
+
       system:
         type: pages
         label: System Pages
-        sortBy: title asc
-        query: site.children.unlisted
+        create: false
+        query: kirby.collection("system-pages")
