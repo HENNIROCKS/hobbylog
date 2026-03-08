@@ -3,10 +3,11 @@
 
 	let { miniatures }: { miniatures: Miniature[] } = $props();
 
-	const collection = $derived(miniatures.filter((m) => !m.wished));
-	const painted = $derived(collection.filter((m) => m.painted));
+	const collection = $derived(miniatures.filter((m) => !m.wished && m.amount > 0));
+	const ownedAmount = $derived(collection.reduce((s, m) => s + m.amount, 0));
+	const paintedAmount = $derived(collection.filter((m) => m.painted).reduce((s, m) => s + m.amount, 0));
 	const percentage = $derived(
-		collection.length > 0 ? Math.round((painted.length / collection.length) * 1000) / 10 : 0
+		ownedAmount > 0 ? Math.round((paintedAmount / ownedAmount) * 1000) / 10 : 0
 	);
 </script>
 
