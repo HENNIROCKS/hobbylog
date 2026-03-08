@@ -172,6 +172,12 @@ Each content page has a `miniatures` structure field with these per-miniature fi
 
 ---
 
+## Kirby License
+
+Kirby CMS is **not free software**. A license is required for production use. See [getkirby.com/buy](https://getkirby.com/buy). Local development and testing do not require a license.
+
+---
+
 ## Kirby Panel
 
 Blueprints live in `site/blueprints/` (native Kirby location). Content can be managed and previewed via the Kirby panel at any time (`http://localhost:8000/panel`).
