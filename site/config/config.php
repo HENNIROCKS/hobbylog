@@ -42,6 +42,19 @@ return [
 	],
 
 	/**
+	 * Redirect root to panel (headless setup — no Kirby frontend)
+	 */
+
+	'routes' => [
+		[
+			'pattern' => '/',
+			'action'  => function () {
+				go(option('hb.frontend_url', 'http://localhost:5173'));
+			},
+		],
+	],
+
+	/**
 	 * Additional config files
 	 */
 
