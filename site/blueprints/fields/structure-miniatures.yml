@@ -1,5 +1,7 @@
 label: Miniatures
 type: structure
+sortable: false
+sortBy: name asc
 
 columns:
   name:
