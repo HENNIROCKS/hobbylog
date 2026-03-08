@@ -621,6 +621,12 @@
             </button>
           </li>
           <li>
+            <button class="session-btn" data-session="march-08">
+              <span class="session-date">2026-03-08</span>
+              <span class="session-title">Panel UX &amp; Frontend Fixes</span>
+            </button>
+          </li>
+          <li>
             <button class="session-btn" data-session="march-07">
               <span class="session-date">2026-03-07</span>
               <span class="session-title">i18n, Field Rename &amp; Mobile UX</span>
@@ -741,6 +747,22 @@
                     >
                   </td>
                   <td>Routing &amp; Filters · Mar 05</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="#m08-root-redirect" onclick="activateSession('march-08')"
+                      >Headless root redirect (<code>/</code> → SvelteKit)</a
+                    >
+                  </td>
+                  <td>Panel UX &amp; Fixes · Mar 08</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="#m08-make-backend" onclick="activateSession('march-08')"
+                      ><code>make backend</code> browser auto-open</a
+                    >
+                  </td>
+                  <td>Panel UX &amp; Fixes · Mar 08</td>
                 </tr>
               </tbody>
             </table>
@@ -926,6 +948,22 @@
                   </td>
                   <td>English Migration · Mar 07</td>
                 </tr>
+                <tr>
+                  <td>
+                    <a href="#m08-uncategorized" onclick="activateSession('march-08')"
+                      >Uncategorized tab (amount=0, not wishlisted)</a
+                    >
+                  </td>
+                  <td>Panel UX &amp; Fixes · Mar 08</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="#m08-bugfixes" onclick="activateSession('march-08')"
+                      >PaintProgress fix, sort tie-breakers, mobile tab wrap</a
+                    >
+                  </td>
+                  <td>Panel UX &amp; Fixes · Mar 08</td>
+                </tr>
               </tbody>
             </table>
           </section>
@@ -1054,6 +1092,38 @@
                 </tr>
                 <tr>
                   <td>
+                    <a href="#m08-panel-layout" onclick="activateSession('march-08')"
+                      >Panel sections: Unlisted / Drafts / System Pages + create control</a
+                    >
+                  </td>
+                  <td>Panel UX &amp; Fixes · Mar 08</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="#m08-panel-layout" onclick="activateSession('march-08')"
+                      >Kirby Collection for OR-logic panel query (<code>system-pages.php</code>)</a
+                    >
+                  </td>
+                  <td>Panel UX &amp; Fixes · Mar 08</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="#m08-structure-sort" onclick="activateSession('march-08')"
+                      >Structure field: <code>sortable: false</code> + <code>sortBy: name asc</code></a
+                    >
+                  </td>
+                  <td>Panel UX &amp; Fixes · Mar 08</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="#m08-description" onclick="activateSession('march-08')"
+                      >Description field (replaces subtitle end-to-end)</a
+                    >
+                  </td>
+                  <td>Panel UX &amp; Fixes · Mar 08</td>
+                </tr>
+                <tr>
+                  <td>
                     <a
                       href="#m07-docs-cleanup"
                       onclick="activateSession('march-07')"
@@ -1152,6 +1222,263 @@
           </section>
         </div>
         <!-- /session-index -->
+
+        <!-- ════════════════════════════════════════
+         SESSION: Panel UX & Frontend Fixes
+         ════════════════════════════════════════ -->
+        <div id="session-march-08" class="session-panel">
+          <div class="hero">
+            <div class="meta">
+              <span class="badge badge-blue">📅 2026-03-08</span>
+              <span class="badge badge-green">✓ Completed</span>
+              <span class="badge badge-purple">Claude Code</span>
+              <span class="badge badge-amber">Session Log</span>
+            </div>
+            <h1>Panel UX &amp; Frontend Fixes</h1>
+            <p>
+              Kirby panel restructure (Unlisted / Drafts / System Pages sections,
+              create-button control, structure field sort, description field, cards
+              file layout); headless root redirect; <code>make backend</code> browser
+              auto-open; Uncategorized tab; collection filter for zero-amount items;
+              faction progress A–Z; <code>PaintProgress</code> amount-based
+              calculation; sort tie-breakers; mobile tab wrap; responsive faction
+              stats; README license note.
+            </p>
+          </div>
+
+          <section data-nav="Overview" id="m08-overview">
+            <h2>
+              <span class="icon" style="background: rgba(108, 142, 247, 0.15)">📋</span>
+              Overview
+            </h2>
+            <table>
+              <thead><tr><th>Area</th><th>What changed</th></tr></thead>
+              <tbody>
+                <tr><td>Kirby root redirect</td><td><code>/</code> redirects to SvelteKit frontend URL (env-aware via <code>option('hb.frontend_url')</code>); panel "Open" button now works correctly</td></tr>
+                <tr><td><code>make backend</code></td><td>Server starts in background, waits 1 s, opens <code>/panel</code> in browser; <code>wait</code> keeps terminal alive</td></tr>
+                <tr><td>Panel site layout</td><td>Four sidebar sections: Collections, Unlisted, Drafts, System Pages; create button on Drafts only</td></tr>
+                <tr><td>System Pages</td><td>Powered by a Kirby Collection (<code>site/collections/system-pages.php</code>) to get true OR logic</td></tr>
+                <tr><td>Structure field</td><td><code>sortable: false</code> + <code>sortBy: name asc</code> — panel mirrors frontend A–Z order</td></tr>
+                <tr><td><code>description</code> field</td><td>Textarea (no toolbar) on main column, top of Page tab; replaces the old <code>subtitle</code> field end-to-end</td></tr>
+                <tr><td>Files tab</td><td><code>layout: cards</code> for larger image previews</td></tr>
+                <tr><td>Uncategorized tab</td><td>Third tab for <code>!wished &amp;&amp; amount === 0</code> items; painted filter and amount/painted sorts hidden on this tab</td></tr>
+                <tr><td>Collection filter</td><td><code>amount === 0 &amp;&amp; wished === false</code> items no longer appear in Collection or faction stats</td></tr>
+                <tr><td>Faction progress</td><td>Sorted A–Z (<code>localeCompare(..., 'de')</code>) instead of by owned count</td></tr>
+                <tr><td><code>PaintProgress</code></td><td>Fixed: now sums <code>amount</code> (like index page) instead of counting entries</td></tr>
+                <tr><td>Sort tie-breakers</td><td>Amount and painted sorts fall back to name A–Z; locale changed to <code>'de'</code> throughout for umlaut handling</td></tr>
+                <tr><td>Mobile: tab nav</td><td><code>flex-wrap</code> on three-tab row so tabs reflow gracefully on narrow screens</td></tr>
+                <tr><td>Mobile: faction stats</td><td>Name column <code>w-28 sm:w-40</code>, stats column <code>w-16 sm:w-24</code></td></tr>
+                <tr><td>README</td><td>Kirby license note added (not free software, license required for production)</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section data-nav="Headless Root Redirect" id="m08-root-redirect">
+            <h2>
+              <span class="icon" style="background: rgba(251, 191, 36, 0.15)">🔀</span>
+              Headless Root Redirect
+            </h2>
+            <p>
+              Visiting <code>localhost:8000</code> previously showed Kirby's "page doesn't exist" error
+              (no home template in a headless setup). A custom Kirby route redirects <code>/</code>
+              to the SvelteKit frontend URL, reading the same env-aware config option used for CORS:
+            </p>
+            <pre><code><span class="s">'routes'</span> =&gt; [
+  [
+    <span class="s">'pattern'</span> =&gt; <span class="s">'/'</span>,
+    <span class="s">'action'</span>  =&gt; <span class="k">function</span> () {
+      go(option(<span class="s">'hb.frontend_url'</span>, <span class="s">'http://localhost:5173'</span>));
+    },
+  ],
+],</code></pre>
+            <p>
+              This also fixes the panel "Open" button on the site root — it previously
+              looped back to <code>/panel</code> after the first iteration of this redirect
+              pointed at <code>/panel</code> instead of the frontend.
+            </p>
+          </section>
+
+          <section data-nav="make backend" id="m08-make-backend">
+            <h2>
+              <span class="icon" style="background: rgba(251, 191, 36, 0.15)">⚙️</span>
+              <code>make backend</code> Browser Auto-open
+            </h2>
+            <pre><code>backend:
+  composer start &amp; sleep 1 &amp;&amp; open http://localhost:8000/panel; wait</code></pre>
+            <ul>
+              <li><code>composer start &amp;</code> — PHP server starts in background</li>
+              <li><code>sleep 1 &amp;&amp; open …</code> — waits until server is ready, then opens <code>/panel</code></li>
+              <li><code>wait</code> — keeps the terminal occupied by the server process until Ctrl+C</li>
+            </ul>
+            <p>
+              All on one Makefile line so it runs in a single shell — <code>&amp;</code> on its own line
+              would be orphaned when the subshell exits.
+            </p>
+          </section>
+
+          <section data-nav="Panel Site Layout" id="m08-panel-layout">
+            <h2>
+              <span class="icon" style="background: rgba(108, 142, 247, 0.15)">🏛️</span>
+              Panel Site Layout
+            </h2>
+            <p>
+              The panel site view was restructured to accommodate unlisted and draft collection
+              pages alongside the permanent system pages.
+            </p>
+            <pre><code>columns:
+  main:   <span class="c"># 2/3</span>
+    collections:  query: site.children.listed       create: <span class="k">false</span>
+  sidebar: <span class="c"># 1/3</span>
+    unlisted:     query: site.children.unlisted.filterBy(<span class="s">"slug"</span>, <span class="s">"!="</span>, <span class="s">"home"</span>).filterBy(...)   create: <span class="k">false</span>
+    drafts:       query: site.drafts                create: <span class="k">true</span>   <span class="c"># only section with create</span>
+    system:       query: kirby.collection(<span class="s">"system-pages"</span>)              create: <span class="k">false</span></code></pre>
+
+            <h3>System Pages — Kirby Collection</h3>
+            <p>
+              Kirby's <code>filterBy</code> KQL does not support OR logic (chained calls are AND).
+              Filtering to show <em>only</em> Home and Error in one section requires a Kirby Collection:
+            </p>
+            <pre><code><span class="c">// site/collections/system-pages.php</span>
+<span class="k">return function</span> ($kirby) {
+  $children = $kirby-&gt;site()-&gt;children();
+  <span class="k">return</span> $children-&gt;filterBy(<span class="s">'slug'</span>, <span class="s">'home'</span>)
+    -&gt;add($children-&gt;filterBy(<span class="s">'slug'</span>, <span class="s">'error'</span>));
+};</code></pre>
+            <div class="callout">
+              <p>
+                <strong>KQL gotcha:</strong> <code>filterBy("intendedTemplate", ...)</code> does not work for
+                string comparison — <code>intendedTemplate()</code> returns a <code>Template</code> object.
+                Even <code>intendedTemplate.name</code> failed in blueprint query context.
+                Slug-based filtering is the reliable fallback.
+              </p>
+            </div>
+            <div class="callout">
+              <p>
+                <strong>KQL gotcha:</strong> <code>site.children.drafts</code> returns nothing — drafts
+                are not part of <code>children()</code>. Use <code>site.drafts</code> directly.
+              </p>
+            </div>
+          </section>
+
+          <section data-nav="Structure Field Sort" id="m08-structure-sort">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)">↕️</span>
+              Structure Field Sort
+            </h2>
+            <p>
+              Two options added to <code>structure-miniatures.yml</code>:
+            </p>
+            <pre><code>type: structure
+sortable: <span class="k">false</span>   <span class="c"># disables drag-to-reorder handle</span>
+sortBy: name asc  <span class="c"># displays items A–Z in the panel</span></code></pre>
+            <p>
+              Without <code>sortBy</code>, disabling drag-and-drop still leaves items in their stored
+              order. Both are needed to make the panel match the frontend's A–Z display.
+            </p>
+          </section>
+
+          <section data-nav="Description Field" id="m08-description">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)">📝</span>
+              Description Field
+            </h2>
+            <p>
+              The old <code>subtitle</code> field (text, in the sidebar) was replaced end-to-end
+              with <code>description</code> (textarea, no toolbar, main column top):
+            </p>
+            <table>
+              <thead><tr><th>File</th><th>Change</th></tr></thead>
+              <tbody>
+                <tr><td><code>site/blueprints/pages/default.yml</code></td><td><code>description: type: textarea, buttons: false</code> at top of main column</td></tr>
+                <tr><td><code>frontend/src/lib/types.ts</code></td><td><code>subtitle: string</code> → <code>description: string</code></td></tr>
+                <tr><td><code>frontend/src/lib/api.ts</code></td><td><code>subtitle: true</code> → <code>description: true</code> in <code>PAGE_SELECT</code></td></tr>
+                <tr><td><code>+page.svelte</code> (index)</td><td><code>page.subtitle</code> → <code>page.description</code></td></tr>
+                <tr><td><code>[slug]/+page.svelte</code></td><td><code>page?.subtitle</code> → <code>page?.description</code></td></tr>
+              </tbody>
+            </table>
+            <div class="callout warn">
+              <p>
+                <strong>Data note:</strong> existing <code>subtitle</code> content in <code>.txt</code> files
+                is not automatically migrated — it must be re-entered via the panel under the new
+                <code>description</code> field.
+              </p>
+            </div>
+          </section>
+
+          <section data-nav="Uncategorized Tab" id="m08-uncategorized">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)">🗂️</span>
+              Uncategorized Tab
+            </h2>
+            <p>
+              A third tab was added for miniatures where <code>wished === false &amp;&amp; amount === 0</code> —
+              items that have been entered but not yet categorised as owned or wishlisted.
+            </p>
+            <table>
+              <thead><tr><th>Tab</th><th>Filter</th></tr></thead>
+              <tbody>
+                <tr><td>Collection</td><td><code>!wished &amp;&amp; amount &gt; 0</code></td></tr>
+                <tr><td>Wishlist</td><td><code>wished</code></td></tr>
+                <tr><td>Uncategorized</td><td><code>!wished &amp;&amp; amount === 0</code> ← new</td></tr>
+              </tbody>
+            </table>
+            <p>
+              Switching to Uncategorized resets <code>paintedOnly</code> and clamps <code>sortBy</code>
+              to <code>'name'</code> (amount and painted sorts are hidden, as they're meaningless with
+              zero amounts). The <code>isCollection</code> derived state gates both the painted filter
+              and the extended sort options.
+            </p>
+          </section>
+
+          <section data-nav="Bug Fixes" id="m08-bugfixes">
+            <h2>
+              <span class="icon" style="background: rgba(248, 113, 113, 0.15)">🐛</span>
+              Bug Fixes
+            </h2>
+
+            <h3>PaintProgress: entry count → amount sum</h3>
+            <p>
+              <code>PaintProgress.svelte</code> calculated the painted percentage by dividing
+              painted <em>entries</em> by total entries. A collection with one painted entry (×1)
+              and one unpainted entry (×100) would show 50% — misleading. Fixed to sum
+              <code>amount</code>, matching the index page logic. Also excludes <code>amount === 0</code>
+              entries from the denominator.
+            </p>
+
+            <h3>Sort tie-breakers</h3>
+            <p>
+              Amount sort and painted sort had no secondary key — items within a group appeared
+              in arbitrary input order. Both now fall back to name A–Z:
+            </p>
+            <pre><code><span class="k">if</span> (sortBy === <span class="s">'amount'</span>)  <span class="k">return</span> b.amount - a.amount  || a.name.localeCompare(b.name, <span class="s">'de'</span>);
+<span class="k">if</span> (sortBy === <span class="s">'painted'</span>) <span class="k">return</span> Number(a.painted) - Number(b.painted) || a.name.localeCompare(b.name, <span class="s">'de'</span>);</code></pre>
+            <p>
+              All <code>localeCompare</code> calls updated from <code>'en'</code> to <code>'de'</code>
+              to handle German umlauts correctly.
+            </p>
+
+            <h3>Mobile: tab nav wrapping</h3>
+            <p>
+              Three tabs + badges could overflow on narrow screens. Changed <code>flex gap-6</code>
+              to <code>flex flex-wrap gap-x-6 gap-y-0</code> — tabs reflow to a second line
+              without breaking the underline indicator.
+            </p>
+
+            <h3>Mobile: faction stats responsive widths</h3>
+            <p>
+              Fixed widths <code>w-40</code> / <code>w-24</code> on the faction name and stats
+              columns were squeezing the progress bar on mobile. Changed to
+              <code>w-28 sm:w-40</code> / <code>w-16 sm:w-24</code>.
+            </p>
+          </section>
+
+          <footer>
+            <p>
+              Generated by Claude Code (claude-sonnet-4-6) · Session date: 2026-03-08
+            </p>
+          </footer>
+        </div>
+        <!-- /session-march-08 -->
 
         <!-- ════════════════════════════════════════
          SESSION: English Migration & i18n
@@ -4867,6 +5194,7 @@ A running log of sessions, decisions, and design rationale lives in
 
     <script>
       const sessions = [
+        "march-08",
         "march-07",
         "march-06-ui",
         "march-05",
