@@ -132,8 +132,8 @@
 							class="flex h-full flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
 						>
 							<h2 class="text-lg font-semibold text-gray-900 dark:text-white">{page.title}</h2>
-							{#if page.subtitle}
-								<p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{page.subtitle}</p>
+							{#if page.description}
+								<p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{page.description}</p>
 							{/if}
 							<div class="mt-auto pt-3">
 								<div class="mb-2 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">

@@ -31,7 +31,7 @@ const MINIATURE_SELECT = {
 const PAGE_SELECT = {
 	id: true,
 	title: true,
-	subtitle: true,
+	description: true,
 	slug: true,
 	paint_progress: 'page.paint_progress.toBool',
 	miniatures: {

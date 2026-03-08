@@ -27,7 +27,7 @@ export interface Miniature {
 export interface CollectionPage {
 	id: string;
 	title: string;
-	subtitle: string;
+	description: string;
 	slug: string;
 	paint_progress: boolean;
 	miniatures: Miniature[];
