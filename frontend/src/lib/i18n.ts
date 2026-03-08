@@ -10,6 +10,7 @@ export const t = {
 	// Tabs
 	collection: 'Collection',
 	wishlist: 'Wishlist',
+	uncategorized: 'Uncategorized',
 	onWishlist: 'on Wishlist',
 
 	// Paint status

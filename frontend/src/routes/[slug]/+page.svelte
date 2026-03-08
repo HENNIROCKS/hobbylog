@@ -14,7 +14,7 @@
 	const page = $derived(data.page);
 	const allMiniatures: Miniature[] = $derived(page?.miniatures ?? []);
 
-	let activeTab = $state<'collection' | 'wishlist'>('collection');
+	let activeTab = $state<'collection' | 'wishlist' | 'uncategorized'>('collection');
 	let view = $state<'cards' | 'table'>('cards');
 	let searchQuery = $state('');
 	let selectedGenre = $state('');
@@ -26,7 +26,7 @@
 
 	onMount(() => {
 		const params = new URLSearchParams(window.location.search);
-		activeTab = (params.get('tab') as 'collection' | 'wishlist') || 'collection';
+		activeTab = (params.get('tab') as 'collection' | 'wishlist' | 'uncategorized') || 'collection';
 		view = (params.get('view') as 'cards' | 'table') || 'cards';
 		searchQuery = params.get('q') || '';
 		selectedGenre = params.get('genre') || '';
@@ -62,17 +62,27 @@
 		if (sortBy === 'painted' || sortBy === 'amount') sortBy = 'name';
 	}
 
+	function switchToUncategorized() {
+		activeTab = 'uncategorized';
+		paintedOnly = false;
+		if (sortBy === 'painted' || sortBy === 'amount') sortBy = 'name';
+	}
+
+	const isCollection = $derived(activeTab === 'collection');
 	const isWishlist = $derived(activeTab === 'wishlist');
 
-	const collectionMinis = $derived(allMiniatures.filter((m) => !m.wished));
+	const collectionMinis = $derived(allMiniatures.filter((m) => !m.wished && m.amount > 0));
 	const collectionTotal = $derived(collectionMinis.reduce((s, m) => s + m.amount, 0));
 
 	const wishlistMinis = $derived(allMiniatures.filter((m) => m.wished));
+	const uncategorizedMinis = $derived(allMiniatures.filter((m) => !m.wished && m.amount === 0));
 
 	const tabMiniatures: Miniature[] = $derived(
-		isWishlist
+		activeTab === 'wishlist'
 			? allMiniatures.filter((m) => m.wished)
-			: allMiniatures.filter((m) => !m.wished)
+			: activeTab === 'uncategorized'
+			? allMiniatures.filter((m) => !m.wished && m.amount === 0)
+			: allMiniatures.filter((m) => !m.wished && m.amount > 0)
 	);
 
 	const factionStats = $derived.by(() => {
@@ -89,7 +99,7 @@
 		}
 		return Array.from(map.entries())
 			.map(([name, s]) => ({ name, ...s, pct: s.owned > 0 ? Math.round((s.painted / s.owned) * 100) : 0 }))
-			.sort((a, b) => b.owned - a.owned);
+			.sort((a, b) => a.name.localeCompare(b.name, 'de'));
 	});
 
 	const filteredMiniatures: Miniature[] = $derived.by(() => {
@@ -107,9 +117,9 @@
 		});
 
 		return filtered.sort((a, b) => {
-			if (sortBy === 'amount') return b.amount - a.amount;
-			if (sortBy === 'painted') return Number(a.painted) - Number(b.painted);
-			return a.name.localeCompare(b.name, 'en');
+			if (sortBy === 'amount') return b.amount - a.amount || a.name.localeCompare(b.name, 'de');
+			if (sortBy === 'painted') return Number(a.painted) - Number(b.painted) || a.name.localeCompare(b.name, 'de');
+			return a.name.localeCompare(b.name, 'de');
 		});
 	});
 </script>
@@ -122,8 +132,8 @@
 	<header class="border-b bg-white px-6 py-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
 		<a href="/" class="mb-1 block text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300">{t.backToAllCollections}</a>
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">{page?.title ?? 'Hobbylog'}</h1>
-		{#if page?.subtitle}
-			<p class="text-sm text-gray-500 dark:text-gray-400">{page.subtitle}</p>
+		{#if page?.description}
+			<p class="text-sm text-gray-500 dark:text-gray-400">{page.description}</p>
 		{/if}
 	</header>
 
@@ -140,11 +150,11 @@
 				<div class="divide-y divide-gray-100 dark:divide-gray-700">
 					{#each factionStats as f}
 						<div class="flex items-center gap-4 px-5 py-2.5">
-							<span class="w-40 shrink-0 truncate text-sm text-gray-700 dark:text-gray-300">{f.name}</span>
+							<span class="w-28 shrink-0 truncate text-sm text-gray-700 sm:w-40 dark:text-gray-300">{f.name}</span>
 							<div class="flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700" style="height:6px">
 								<div class="rounded-full bg-green-500" style="width:{f.pct}%;height:6px"></div>
 							</div>
-							<span class="w-24 shrink-0 text-right text-xs text-gray-400 dark:text-gray-500">
+							<span class="w-16 shrink-0 text-right text-xs text-gray-400 sm:w-24 dark:text-gray-500">
 								{f.painted}/{f.owned} · {f.pct}%
 							</span>
 						</div>
@@ -154,7 +164,7 @@
 		{/if}
 
 		<div class="mb-4 border-b border-gray-200 dark:border-gray-700">
-			<nav class="-mb-px flex gap-6">
+			<nav class="-mb-px flex flex-wrap gap-x-6 gap-y-0">
 				<button
 					class="border-b-2 pb-2 text-sm font-medium transition-colors {activeTab === 'collection' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 dark:text-gray-400'}"
 					onclick={() => (activeTab = 'collection')}
@@ -173,6 +183,15 @@
 						{wishlistMinis.length}
 					</span>
 				</button>
+				<button
+					class="border-b-2 pb-2 text-sm font-medium transition-colors {activeTab === 'uncategorized' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 dark:text-gray-400'}"
+					onclick={switchToUncategorized}
+				>
+					{t.uncategorized}
+					<span class="ml-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+						{uncategorizedMinis.length}
+					</span>
+				</button>
 			</nav>
 		</div>
 
@@ -183,7 +202,7 @@
 				bind:selectedGenre
 				bind:selectedFaction
 				bind:paintedOnly
-				showPaintedFilter={!isWishlist}
+				showPaintedFilter={isCollection}
 			/>
 
 			<div class="flex items-center gap-3">
@@ -194,7 +213,7 @@
 						class="rounded border border-gray-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
 					>
 						<option value="name">{t.sortName}</option>
-						{#if !isWishlist}
+						{#if isCollection}
 							<option value="amount">{t.sortAmount}</option>
 							<option value="painted">{t.sortUnpaintedFirst}</option>
 						{/if}
