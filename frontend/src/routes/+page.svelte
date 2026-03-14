@@ -34,6 +34,7 @@
 			.reduce((sum, m) => sum + m.amount, 0)
 	);
 	const genreTotal = $derived(fantasyAmount + scifiAmount);
+	const dominantGenre = $derived(fantasyAmount >= scifiAmount ? 'Fantasy' : 'Sci-Fi');
 
 	// Painting queue: top 10 unpainted owned entries across all collections
 	const paintingQueue = $derived(
@@ -78,6 +79,8 @@
 						color="#a855f7"
 						trackColor="#3b82f6"
 						label="Fantasy / Sci-Fi"
+						pie={true}
+						centerLabel={dominantGenre}
 					/>
 					<div class="flex flex-col items-center gap-2">
 						<div class="flex h-28 w-28 items-center justify-center rounded-full bg-amber-400 dark:bg-amber-500">

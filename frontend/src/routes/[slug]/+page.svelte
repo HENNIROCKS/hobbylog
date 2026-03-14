@@ -138,9 +138,7 @@
 	</header>
 
 	<main class="mx-auto max-w-screen-2xl px-4 py-6 sm:px-6">
-		{#if page.paint_progress}
-			<PaintProgress miniatures={allMiniatures} />
-		{/if}
+		<PaintProgress miniatures={allMiniatures} />
 
 		{#if factionStats.length > 1}
 			<div class="mb-6 rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">

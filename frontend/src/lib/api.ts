@@ -33,7 +33,6 @@ const PAGE_SELECT = {
 	title: true,
 	description: true,
 	slug: true,
-	paint_progress: 'page.paint_progress.toBool',
 	miniatures: {
 		query: 'page.miniatures.toStructure',
 		select: MINIATURE_SELECT

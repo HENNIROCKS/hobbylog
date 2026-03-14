@@ -19,7 +19,7 @@ columns:
         label: Unlisted
         sortBy: title asc
         create: false
-        query: site.children.unlisted.filterBy("slug", "!=", "home").filterBy("slug", "!=", "error")
+        query: site.children.unlisted
 
       drafts:
         type: pages
@@ -29,5 +29,7 @@ columns:
       system:
         type: pages
         label: System Pages
+        sortBy: title asc
         create: false
         query: kirby.collection("system-pages")
+

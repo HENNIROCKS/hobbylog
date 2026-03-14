@@ -1,47 +1,55 @@
 <script lang="ts">
-	import { t } from '$lib/i18n';
-
 	let {
 		value,
 		total,
 		color,
 		trackColor = 'var(--chart-track)',
-		label
+		label,
+		centerLabel,
+		pie = false
 	}: {
 		value: number;
 		total?: number;
 		color: string;
 		trackColor?: string;
 		label: string;
+		centerLabel?: string;
+		pie?: boolean;
 	} = $props();
 
-	const r = 36;
-	const circ = 2 * Math.PI * r;
+	const r = $derived(pie ? 25 : 36);
+	const circ = $derived(2 * Math.PI * r);
 	const pct = $derived(total !== undefined && total > 0 ? Math.min(value / total, 1) : 0);
 	const filled = $derived(pct * circ);
 </script>
 
 <div class="flex flex-col items-center gap-2">
 	<svg viewBox="0 0 100 100" class="h-28 w-28">
-		<circle cx="50" cy="50" r={r} fill="none" style="stroke: {trackColor}" stroke-width="16" />
 		{#if total !== undefined}
+			<circle cx="50" cy="50" r={r} fill="none" style="stroke: {trackColor}" stroke-width={pie ? 50 : 12} />
 			<circle
 				cx="50"
 				cy="50"
 				r={r}
 				fill="none"
 				stroke={color}
-				stroke-width="16"
+				stroke-width={pie ? 50 : 12}
 				stroke-dasharray="{filled} {circ}"
-				stroke-linecap="round"
+				stroke-linecap={pie ? 'butt' : 'round'}
 				transform="rotate(-90 50 50)"
 			/>
-			<text x="50" y="47" text-anchor="middle" font-size="20" font-weight="600" class="fill-gray-900 dark:fill-white">
-				{value}
-			</text>
-			<text x="50" y="63" text-anchor="middle" font-size="9" class="fill-gray-400 dark:fill-gray-500">
-				{t.of} {total}
-			</text>
+			{#if pie && centerLabel}
+				<text x="50" y="55" text-anchor="middle" font-size="14" font-weight="600" class="fill-white">{centerLabel}</text>
+			{:else if !pie}
+				{#if centerLabel}
+					<text x="50" y="46" text-anchor="middle" font-size="11" class="fill-gray-500 dark:fill-gray-400">{centerLabel}</text>
+					<text x="50" y="62" text-anchor="middle" font-size="20" font-weight="600" class="fill-gray-900 dark:fill-white">{value}</text>
+				{:else}
+					<text x="50" y="55" text-anchor="middle" font-size="18" font-weight="600" class="fill-gray-900 dark:fill-white">
+						{parseFloat((pct * 100).toFixed(1))}%
+					</text>
+				{/if}
+			{/if}
 		{:else}
 			<text x="50" y="57" text-anchor="middle" font-size="20" font-weight="600" class="fill-gray-900 dark:fill-white">
 				{value}

@@ -1,0 +1,9 @@
+title: Error
+
+options:
+  delete: false
+  changeSlug: false
+  changeTitle: false
+  changeTemplate: false
+  changeStatus: false
+  duplicate: false

@@ -621,6 +621,12 @@
             </button>
           </li>
           <li>
+            <button class="session-btn" data-session="march-09">
+              <span class="session-date">2026-03-09</span>
+              <span class="session-title">Panel Cleanup &amp; Donut Refinements</span>
+            </button>
+          </li>
+          <li>
             <button class="session-btn" data-session="march-08">
               <span class="session-date">2026-03-08</span>
               <span class="session-title">Panel UX &amp; Frontend Fixes</span>
@@ -1021,6 +1027,22 @@
                   </td>
                   <td>Search, Sort &amp; Stats · Mar 06</td>
                 </tr>
+                <tr>
+                  <td>
+                    <a href="#m09-donut" onclick="activateSession('march-09')"
+                      >DonutChart: percentage, thinner ring, genre pie, unified layout</a
+                    >
+                  </td>
+                  <td>Panel Cleanup · Mar 09</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="#m09-paint-progress" onclick="activateSession('march-09')"
+                      >Paint progress toggle removed (always shown)</a
+                    >
+                  </td>
+                  <td>Panel Cleanup · Mar 09</td>
+                </tr>
               </tbody>
             </table>
           </section>
@@ -1121,6 +1143,22 @@
                     >
                   </td>
                   <td>Panel UX &amp; Fixes · Mar 08</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="#m09-page-delete" onclick="activateSession('march-09')"
+                      >Panel page-delete silent failure (missing local images)</a
+                    >
+                  </td>
+                  <td>Panel Cleanup · Mar 09</td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="#m09-system-blueprints" onclick="activateSession('march-09')"
+                      >Home &amp; Error page blueprints (read-only, no content)</a
+                    >
+                  </td>
+                  <td>Panel Cleanup · Mar 09</td>
                 </tr>
                 <tr>
                   <td>
@@ -1226,6 +1264,199 @@
         <!-- ════════════════════════════════════════
          SESSION: Panel UX & Frontend Fixes
          ════════════════════════════════════════ -->
+        <div id="session-march-09" class="session-panel">
+          <div class="hero">
+            <div class="meta">
+              <span class="badge badge-blue">📅 2026-03-09</span>
+              <span class="badge badge-green">✓ Completed</span>
+              <span class="badge badge-purple">Claude Code</span>
+              <span class="badge badge-amber">Session Log</span>
+            </div>
+            <h1>Panel Cleanup &amp; Donut Refinements</h1>
+            <p>
+              Investigated panel page-delete silently failing (missing image files);
+              removed the paint-progress toggle (always shown now); reworked
+              <code>DonutChart</code> to show percentages with one decimal place,
+              thinner ring, and total below the label; restored System Pages panel section
+              with dedicated read-only blueprints for Home and Error pages;
+              fixed whitespace rendering in all session doc tree blocks.
+            </p>
+          </div>
+
+          <section data-nav="Overview" id="m09-overview">
+            <h2>
+              <span class="icon" style="background: rgba(108, 142, 247, 0.15)">📋</span>
+              Overview
+            </h2>
+            <table>
+              <thead><tr><th>Area</th><th>What changed</th></tr></thead>
+              <tbody>
+                <tr><td>Page delete (panel)</td><td>Silent failure traced to missing image files; Kirby returns 200 but <code>Dir::remove()</code> aborts. Fix: delete pages from production panel where images exist. One-off manual <code>rm -rf</code> for the affected page locally.</td></tr>
+                <tr><td>Paint-progress toggle</td><td>Removed from blueprint, <code>types.ts</code>, and KQL select. <code>PaintProgress</code> component now always renders on collection pages.</td></tr>
+                <tr><td><code>DonutChart</code> — percentages</td><td>Center text changed from <code>value / total</code> to <code>parseFloat((pct * 100).toFixed(1))%</code> — whole numbers stay clean, small values get one decimal.</td></tr>
+                <tr><td><code>DonutChart</code> — ring width</td><td>Stroke-width reduced from 16 → 12 for more inner breathing room.</td></tr>
+                <tr><td><code>DonutChart</code> — total below label</td><td>Raw <code>{value} / {total}</code> count shown as a small line below the chart label (only when <code>total</code> prop is provided). <em>Later removed</em> — sub-line dropped in favour of a unified layout (data inside, label below only).</td></tr>
+                <tr><td><code>DonutChart</code> — genre pie &amp; unified layout</td><td>Genre chart switched to a filled pie (<code>pie</code> prop); center shows dominant genre name (<code>centerLabel</code> prop). Sub-line removed from all three stats charts. All now follow: data inside the graphic, label below, nothing else.</td></tr>
+                <tr><td>System Pages blueprints</td><td>Created <code>home.yml</code> and <code>error.yml</code> — no content fields; all destructive/rename/duplicate options disabled.</td></tr>
+                <tr><td>Docs tree blocks</td><td>Fixed whitespace rendering in all four <code>.tree</code> divs — spans rewritten inline so <code>white-space: pre</code> no longer picks up HTML indentation as visible spaces.</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section data-nav="Page Delete: Silent Failure" id="m09-page-delete">
+            <h2>
+              <span class="icon" style="background: rgba(248, 113, 113, 0.15)">🗑️</span>
+              Page Delete: Silent Failure
+            </h2>
+            <p>
+              Attempting to delete <code>madensippe-des-nurgle</code> from the local panel
+              appeared to do nothing. The browser console was clean. The Network tab showed
+              two 200 responses — the confirmation dialog and the delete action:
+            </p>
+            <pre><code><span class="c">// Confirmation dialog</span>
+{"$dialog":{"component":"k-remove-dialog","props":{"text":"Do you really want to delete &lt;strong&gt;madensippe-des-nurgle&lt;\/strong&gt;?"},"code":200}}
+
+<span class="c">// After confirming</span>
+{"$dialog":{"event":"page.delete","redirect":"\/site","code":200}}</code></pre>
+            <p>
+              Despite the 200, the content directory was still on disk. Root cause: the page
+              had 14 <code>.png.txt</code> metadata files but the actual <code>.png</code>
+              images were missing locally (never synced from production — images are not in
+              git). Kirby's internal delete likely aborted mid-operation on the broken file
+              references but still returned success.
+            </p>
+            <div class="callout warn">
+              <p>
+                <strong>Rule of thumb:</strong> delete pages from the <em>production</em>
+                panel, where all image files actually exist. Local panel deletions will fail
+                silently for any page that has images (since images are FTP-only, never
+                synced locally).
+              </p>
+            </div>
+          </section>
+
+          <section data-nav="Paint Progress Toggle Removed" id="m09-paint-progress">
+            <h2>
+              <span class="icon" style="background: rgba(52, 211, 153, 0.15)">📊</span>
+              Paint Progress Toggle Removed
+            </h2>
+            <p>
+              The <code>paint_progress</code> boolean toggle in the panel Page tab was
+              originally a per-collection on/off switch. Since the progress bar is always
+              useful, the toggle was removed and <code>PaintProgress</code> now renders
+              unconditionally.
+            </p>
+            <table>
+              <thead><tr><th>File</th><th>Change</th></tr></thead>
+              <tbody>
+                <tr><td><code>site/blueprints/pages/default.yml</code></td><td>Removed <code>paint-progress: type: toggle</code> field</td></tr>
+                <tr><td><code>frontend/src/lib/types.ts</code></td><td>Removed <code>paint_progress: boolean</code> from <code>CollectionPage</code></td></tr>
+                <tr><td><code>frontend/src/lib/api.ts</code></td><td>Removed <code>paint_progress: 'page.paint_progress.toBool'</code> from <code>PAGE_SELECT</code></td></tr>
+                <tr><td><code>[slug]/+page.svelte</code></td><td>Removed <code>{#if page.paint_progress}</code> guard — <code>&lt;PaintProgress&gt;</code> always renders</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section data-nav="DonutChart Refinements" id="m09-donut">
+            <h2>
+              <span class="icon" style="background: rgba(167, 139, 250, 0.15)">🍩</span>
+              DonutChart Refinements
+            </h2>
+
+            <h3>Percentage in center</h3>
+            <p>
+              The center text previously showed <code>value</code> on one line and
+              <code>of {total}</code> on a second line. Changed to a single percentage
+              value that avoids 4-digit overflow and is more readable at the small donut size:
+            </p>
+            <pre><code>{parseFloat((pct * 100).toFixed(1))}%</code></pre>
+            <p>
+              <code>toFixed(1)</code> gives one decimal place; <code>parseFloat</code> strips
+              the trailing <code>.0</code> for whole numbers. Result: <code>49%</code>,
+              <code>0.4%</code>, <code>100%</code> — never the harsh <code>0%</code> when
+              a tiny amount is painted.
+            </p>
+
+            <h3>Thinner ring</h3>
+            <p>
+              <code>stroke-width</code> reduced from <code>16</code> to <code>12</code>
+              (both track and fill circles) to give the percentage text more breathing room
+              inside the ring. Worst-case text is <code>99.9%</code> (5 wide characters);
+              tested visually to confirm no overlap.
+            </p>
+
+            <h3>Total below label <em>(later removed)</em></h3>
+            <p>
+              Raw count was shown as a small line underneath the label when <code>total</code>
+              was provided. This was removed in the same session in favour of a unified layout
+              (see below).
+            </p>
+
+            <h3>Genre chart → filled pie</h3>
+            <p>
+              The genre chart was reworked from a donut to a solid filled pie using a new
+              optional <code>pie</code> boolean prop. In pie mode the stroke-width is set to
+              <code>50</code> (= 2 × radius of 25) so the stroke covers the full circle area,
+              producing a filled slice without needing SVG <code>&lt;path&gt;</code> arcs.
+              Two circles stack: track (Sci-Fi colour) and fill (Fantasy colour).
+            </p>
+            <pre><code><span class="c">&lt;!-- pie mode circles --&gt;</span>
+&lt;circle cx="50" cy="50" r={r} fill="none" style="stroke: {trackColor}" stroke-width="50" /&gt;
+&lt;circle cx="50" cy="50" r={r} fill="none" stroke={color}
+  stroke-width="50" stroke-linecap="butt"
+  stroke-dasharray="{filled} {circ}" transform="rotate(-90 50 50)" /&gt;</code></pre>
+
+            <h3>centerLabel prop &amp; unified layout</h3>
+            <p>
+              A new optional <code>centerLabel</code> string prop was added. In pie mode it
+              renders as white text centred on the graphic. The genre chart passes the dominant
+              genre name (<code>Fantasy</code> or <code>Sci-Fi</code>) so the center carries
+              real data rather than a generic label.
+            </p>
+            <p>
+              The <code>value / total</code> sub-line was removed entirely. All three stats
+              graphics now follow the same pattern:
+            </p>
+            <ul>
+              <li><strong>Painted donut</strong> — percentage inside, "Painted" below</li>
+              <li><strong>Genre pie</strong> — dominant genre name inside, "Fantasy / Sci-Fi" below</li>
+              <li><strong>Wishlist circle</strong> — count inside, "Wishlist" below</li>
+            </ul>
+          </section>
+
+          <section data-nav="Home &amp; Error Blueprints" id="m09-system-blueprints">
+            <h2>
+              <span class="icon" style="background: rgba(108, 142, 247, 0.15)">📄</span>
+              Home &amp; Error Blueprints
+            </h2>
+            <p>
+              Home and Error pages previously had no blueprint, so Kirby fell back to
+              <code>default.yml</code> — giving them a full Miniatures tab and all panel
+              actions. Created dedicated minimal blueprints for both with no content fields
+              and all mutating actions disabled:
+            </p>
+            <table>
+              <thead><tr><th>Option</th><th>Value</th></tr></thead>
+              <tbody>
+                <tr><td><code>delete</code></td><td><code>false</code></td></tr>
+                <tr><td><code>changeSlug</code></td><td><code>false</code></td></tr>
+                <tr><td><code>changeTitle</code></td><td><code>false</code></td></tr>
+                <tr><td><code>changeTemplate</code></td><td><code>false</code></td></tr>
+                <tr><td><code>changeStatus</code></td><td><code>false</code></td></tr>
+                <tr><td><code>duplicate</code></td><td><code>false</code></td></tr>
+              </tbody>
+            </table>
+            <p>Files created: <code>site/blueprints/pages/home.yml</code> and <code>site/blueprints/pages/error.yml</code>.</p>
+          </section>
+
+          <footer>
+            <p>
+              Generated by Claude Code (claude-sonnet-4-6) · Session date: 2026-03-09
+            </p>
+          </footer>
+        </div>
+        <!-- /session-march-09 -->
+
         <div id="session-march-08" class="session-panel">
           <div class="hero">
             <div class="meta">
@@ -2730,42 +2961,24 @@ htmlhead()-&gt;recommended_minimum()-&gt;title(...)
               >
               Resulting Structure
             </h2>
-            <div class="tree">
-              <span class="tree-dir">hobbylog.hendrik-berends.de/</span>
-              ├── <span class="tree-dir">content/</span>
-              <span class="tree-note"
-                >← Kirby flat-file database (gitignored)</span
-              >
-              ├── <span class="tree-dir">docs/</span>
-              <span class="tree-note">← Session logs (this file)</span> ├──
-              <span class="tree-dir">frontend/</span>
-              <span class="tree-note">← SvelteKit app</span> │ ├──
-              <span class="tree-dir">build/</span>
-              <span class="tree-note">← Static output (gitignored)</span> │ ├──
-              <span class="tree-dir">node_modules/</span>
-              <span class="tree-note">← JS deps (gitignored)</span> │ ├──
-              <span class="tree-dir">src/</span>
-              <span class="tree-note">← Svelte source</span> │ └──
-              <span class="tree-dir">static/</span>
-              <span class="tree-note">← Favicon, manifest, robots.txt</span> ├──
-              <span class="tree-dir">kirby/</span>
-              <span class="tree-note">← Kirby core (gitignored)</span> ├──
-              <span class="tree-dir">media/</span>
-              <span class="tree-note">← Kirby media cache (gitignored)</span>
-              ├── <span class="tree-dir">site/</span> │ ├──
-              <span class="tree-dir">config/</span> │ └──
-              <span class="tree-dir">plugins/</span> │ ├──
-              <span class="tree-dir">hb-commons/</span>
-              <span class="tree-note">← Shared helpers + head snippet</span> │
-              ├── <span class="tree-dir">hb-theme-hobbylog/</span>
-              <span class="tree-note"
-                >← Blueprints, snippets, templates, SCSS</span
-              >
-              │ ├── <span class="tree-dir">kirby-password-guard/</span> │ └──
-              <span class="tree-dir">kql/</span> └──
-              <span class="tree-dir">vendor/</span>
-              <span class="tree-note">← Composer packages (gitignored)</span>
-            </div>
+            <div class="tree"><span class="tree-dir">hobbylog.hendrik-berends.de/</span>
+├── <span class="tree-dir">content/</span>              <span class="tree-note">← Kirby flat-file database (gitignored)</span>
+├── <span class="tree-dir">docs/</span>                 <span class="tree-note">← Session logs (this file)</span>
+├── <span class="tree-dir">frontend/</span>             <span class="tree-note">← SvelteKit app</span>
+│   ├── <span class="tree-dir">build/</span>            <span class="tree-note">← Static output (gitignored)</span>
+│   ├── <span class="tree-dir">node_modules/</span>     <span class="tree-note">← JS deps (gitignored)</span>
+│   ├── <span class="tree-dir">src/</span>              <span class="tree-note">← Svelte source</span>
+│   └── <span class="tree-dir">static/</span>           <span class="tree-note">← Favicon, manifest, robots.txt</span>
+├── <span class="tree-dir">kirby/</span>                <span class="tree-note">← Kirby core (gitignored)</span>
+├── <span class="tree-dir">media/</span>                <span class="tree-note">← Kirby media cache (gitignored)</span>
+├── <span class="tree-dir">site/</span>
+│   ├── <span class="tree-dir">config/</span>
+│   └── <span class="tree-dir">plugins/</span>
+│       ├── <span class="tree-dir">hb-commons/</span>           <span class="tree-note">← Shared helpers + head snippet</span>
+│       ├── <span class="tree-dir">hb-theme-hobbylog/</span>    <span class="tree-note">← Blueprints, snippets, templates, SCSS</span>
+│       ├── <span class="tree-dir">kirby-password-guard/</span>
+│       └── <span class="tree-dir">kql/</span>
+└── <span class="tree-dir">vendor/</span>               <span class="tree-note">← Composer packages (gitignored)</span></div>
           </section>
 
           <hr class="session-divider" data-label="Headless Architecture" />
@@ -3000,31 +3213,17 @@ htmlhead()-&gt;recommended_minimum()-&gt;title(...)
               SvelteKit Scaffold
             </h2>
 
-            <div class="tree">
-              <span class="tree-dir">frontend/</span>
-              ├── <span class="tree-new">src/app.css</span>
-              <span class="tree-note"
-                >← Tailwind entry: @import 'tailwindcss'</span
-              >
-              ├── <span class="tree-new">src/lib/types.ts</span>
-              <span class="tree-note">← TypeScript interfaces</span> ├──
-              <span class="tree-new">src/lib/api.ts</span>
-              <span class="tree-note">← KQL fetch helper</span> ├──
-              <span class="tree-new">src/lib/components/</span>
-              <span class="tree-note">← All UI components</span> ├──
-              <span class="tree-new">src/routes/+layout.ts</span>
-              <span class="tree-note">← prerender = true</span> ├──
-              <span class="tree-new">src/routes/+layout.svelte</span>
-              <span class="tree-note">← imports app.css</span> ├──
-              <span class="tree-new">src/routes/+page.ts</span>
-              <span class="tree-note">← load with try/catch</span> ├──
-              <span class="tree-new">src/routes/+page.svelte</span>
-              <span class="tree-note">← main view</span> ├──
-              <span class="tree-new">svelte.config.js</span>
-              <span class="tree-note">← adapter-static</span> └──
-              <span class="tree-new">vite.config.ts</span>
-              <span class="tree-note">← Tailwind Vite plugin</span>
-            </div>
+            <div class="tree"><span class="tree-dir">frontend/</span>
+├── <span class="tree-new">src/app.css</span>               <span class="tree-note">← Tailwind entry: @import 'tailwindcss'</span>
+├── <span class="tree-new">src/lib/types.ts</span>          <span class="tree-note">← TypeScript interfaces</span>
+├── <span class="tree-new">src/lib/api.ts</span>            <span class="tree-note">← KQL fetch helper</span>
+├── <span class="tree-new">src/lib/components/</span>       <span class="tree-note">← All UI components</span>
+├── <span class="tree-new">src/routes/+layout.ts</span>     <span class="tree-note">← prerender = true</span>
+├── <span class="tree-new">src/routes/+layout.svelte</span> <span class="tree-note">← imports app.css</span>
+├── <span class="tree-new">src/routes/+page.ts</span>       <span class="tree-note">← load with try/catch</span>
+├── <span class="tree-new">src/routes/+page.svelte</span>   <span class="tree-note">← main view</span>
+├── <span class="tree-new">svelte.config.js</span>          <span class="tree-note">← adapter-static</span>
+└── <span class="tree-new">vite.config.ts</span>            <span class="tree-note">← Tailwind Vite plugin</span></div>
 
             <h3>svelte.config.js</h3>
             <pre><code><span class="k">import</span> adapter <span class="k">from</span> <span class="s">'@sveltejs/adapter-static'</span>;
@@ -3477,18 +3676,9 @@ cd frontend
               hb-commons' generic default page. Two files were created:
             </p>
 
-            <div class="tree">
-              <span class="tree-dir"
-                >site/plugins/hb-theme-hobbylog/blueprints/</span
-              >
-              <span class="tree-new"
-                >├── pages/default.yml ← Collection page (3 tabs)</span
-              >
-              <span class="tree-new"
-                >└── fields/structure-miniatures.yml ← flat structure
-                field</span
-              >
-            </div>
+            <div class="tree"><span class="tree-dir">site/plugins/hb-theme-hobbylog/blueprints/</span>
+<span class="tree-new">├── pages/default.yml ← Collection page (3 tabs)</span>
+<span class="tree-new">└── fields/structure-miniatures.yml ← flat structure field</span></div>
 
             <h3>pages/default.yml</h3>
             <p>Three-tab layout overriding the hb-commons generic default:</p>
@@ -4407,30 +4597,17 @@ make frontend   # vite dev → SvelteKit on localhost:5173</code></pre>
             >
               Migrated files
             </h3>
-            <div class="tree">
-              <span class="tree-dir">site/</span>
-              ├── <span class="tree-dir">blueprints/</span>
-              <span class="tree-note">← new (was in plugin)</span> │ ├──
-              <span class="tree-dir">pages/</span> │ │ └──
-              <span class="tree-new">default.yml</span>
-              <span class="tree-note">Collection blueprint (3 tabs)</span> │ ├──
-              <span class="tree-dir">fields/</span> │ │ └──
-              <span class="tree-new">structure-miniatures.yml</span>
-              <span class="tree-note">16-field miniature structure</span> │ └──
-              <span class="tree-dir">sections/</span> │ └──
-              <span class="tree-new">files-files.yml</span>
-              <span class="tree-note">Files section for Files tab</span> └──
-              <span class="tree-dir">models/</span>
-              <span class="tree-note">← new (was in plugin)</span> ├──
-              <span class="tree-new">default.php</span>
-              <span class="tree-note"
-                >DefaultPage — previewUrl → SvelteKit slug</span
-              >
-              └── <span class="tree-new">home.php</span>
-              <span class="tree-note"
-                >HomePage — previewUrl → SvelteKit root</span
-              >
-            </div>
+            <div class="tree"><span class="tree-dir">site/</span>
+├── <span class="tree-dir">blueprints/</span>          <span class="tree-note">← new (was in plugin)</span>
+│   ├── <span class="tree-dir">pages/</span>
+│   │   └── <span class="tree-new">default.yml</span>              <span class="tree-note">Collection blueprint (3 tabs)</span>
+│   ├── <span class="tree-dir">fields/</span>
+│   │   └── <span class="tree-new">structure-miniatures.yml</span>  <span class="tree-note">16-field miniature structure</span>
+│   └── <span class="tree-dir">sections/</span>
+│       └── <span class="tree-new">files-files.yml</span>          <span class="tree-note">Files section for Files tab</span>
+└── <span class="tree-dir">models/</span>              <span class="tree-note">← new (was in plugin)</span>
+    ├── <span class="tree-new">default.php</span>              <span class="tree-note">DefaultPage — previewUrl → SvelteKit slug</span>
+    └── <span class="tree-new">home.php</span>                 <span class="tree-note">HomePage — previewUrl → SvelteKit root</span></div>
             <p style="margin-top: 1rem">
               The <code>theme</code> and <code>plugins</code> options were
               removed from <code>config.php</code> — Kirby auto-discovers
@@ -5194,6 +5371,7 @@ A running log of sessions, decisions, and design rationale lives in
 
     <script>
       const sessions = [
+        "march-09",
         "march-08",
         "march-07",
         "march-06-ui",

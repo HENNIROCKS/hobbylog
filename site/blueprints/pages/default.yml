@@ -25,9 +25,6 @@ tabs:
       sidebar:
         width: 1/3
         fields:
-          paint-progress:
-            label: Show paint progress
-            type: toggle
           preview-image:
             label: Preview image
             type: files
